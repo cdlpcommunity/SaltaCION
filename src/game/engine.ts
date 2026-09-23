@@ -40,6 +40,7 @@ export class GameEngine {
   zoneAnnouncement = 0;
 
   rouletteReady = false;
+  isZoneTest = false;
   inputLeft = false;
   inputRight = false;
   inputJump = false;
@@ -95,6 +96,7 @@ export class GameEngine {
     this.score = 0;
     this.coinCount = 0;
     this.rouletteReady = false;
+    this.isZoneTest = false;
     this.maxHeight = 0;
     this.lives = 1;
     this.cameraY = 0;
@@ -121,6 +123,7 @@ export class GameEngine {
     if (!zone) return;
 
     this.startGame();
+    this.isZoneTest = true;
     this.maxHeight = zone.heightThreshold;
     this.currentZoneIndex = zoneIndex;
     this.currentZone = zone;
@@ -158,6 +161,7 @@ export class GameEngine {
     this.score = 0;
     this.coinCount = 0;
     this.rouletteReady = false;
+    this.isZoneTest = false;
     this.maxHeight = 0;
     this.cameraY = 0;
     this.shake = 0;
@@ -294,8 +298,9 @@ export class GameEngine {
       zoneName: this.currentZone.name,
       zoneSubtitle: this.currentZone.subtitle,
       rouletteReady: this.rouletteReady,
+      isZoneTest: this.isZoneTest,
     };
-    const key = `${snap.state}|${snap.score}|${snap.coins}|${snap.height}|${snap.lives}|${snap.hasJetpack}|${snap.hasPropeller}|${snap.hasShield}|${snap.hasSpringShoes}|${snap.jetpackFuel.toFixed(3)}|${snap.propellerFuel.toFixed(3)}|${snap.zone}|${snap.rouletteReady}`;
+    const key = `${snap.state}|${snap.score}|${snap.coins}|${snap.height}|${snap.lives}|${snap.hasJetpack}|${snap.hasPropeller}|${snap.hasShield}|${snap.hasSpringShoes}|${snap.jetpackFuel.toFixed(3)}|${snap.propellerFuel.toFixed(3)}|${snap.zone}|${snap.rouletteReady}|${snap.isZoneTest}`;
     if (key === this.lastSnapKey) return;
     this.lastSnapKey = key;
     this.onStateChange(snap);
@@ -938,6 +943,7 @@ export class GameEngine {
       zoneName: this.currentZone.name,
       zoneSubtitle: this.currentZone.subtitle,
       rouletteReady: this.rouletteReady,
+      isZoneTest: this.isZoneTest,
     };
   }
 }

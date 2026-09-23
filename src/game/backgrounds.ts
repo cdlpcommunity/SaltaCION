@@ -792,20 +792,24 @@ export function drawStratosphereBackground(ctx: Ctx, engine: GameEngine, time: n
 export function drawMesosphereBackground(ctx: Ctx, engine: GameEngine, time: number) {
   const parallax = engine.cameraY;
 
-  // Aurora ribbons (animated wavy bands)
+  // Aurora ribbons (animated wavy bands) — optimized with gradient strokes
   for (let band = 0; band < 3; band++) {
     const bandY = GAME_HEIGHT * (0.2 + band * 0.25);
     const bandColor = band === 0 ? '40,220,140' : band === 1 ? '60,180,255' : '140,80,255';
     const phase = time * 0.5 + band * 1.5;
-    for (let x = 0; x < GAME_WIDTH; x += 2) {
+    const step = 8;
+    for (let x = 0; x < GAME_WIDTH; x += step) {
       const wave = Math.sin(x * 0.015 + phase) * 15 + Math.sin(x * 0.04 + phase * 1.3) * 8;
       const wave2 = Math.sin(x * 0.025 + phase * 0.7) * 10;
       const ribbonH = 30 + Math.sin(x * 0.02 + phase) * 15;
       const alpha = 0.04 + Math.sin(x * 0.03 + phase * 2) * 0.02;
-      for (let dy = 0; dy < ribbonH; dy += 2) {
-        const fade = 1 - Math.abs(dy - ribbonH / 2) / (ribbonH / 2);
-        px(ctx, x, bandY + wave + wave2 + dy, 2, 2, `rgba(${bandColor},${alpha * fade})`);
-      }
+      const cy = bandY + wave + wave2 + ribbonH / 2;
+      const grad = ctx.createLinearGradient(0, cy - ribbonH / 2, 0, cy + ribbonH / 2);
+      grad.addColorStop(0, `rgba(${bandColor},0)`);
+      grad.addColorStop(0.5, `rgba(${bandColor},${alpha})`);
+      grad.addColorStop(1, `rgba(${bandColor},0)`);
+      ctx.fillStyle = grad;
+      ctx.fillRect(x, cy - ribbonH / 2, step + 1, ribbonH);
     }
   }
 

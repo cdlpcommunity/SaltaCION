@@ -30,6 +30,7 @@ export function Game() {
     jetpackFuel: 0, propellerFuel: 0,
     zone: 'innerCore', zoneName: 'Núcleo Interno', zoneSubtitle: 'La Semilla de Hierro',
     rouletteReady: false,
+    isZoneTest: false,
   });
   const [viewMode, setViewMode] = useState<ViewMode>('auto');
   const [isMobile, setIsMobile] = useState(false);
@@ -348,6 +349,7 @@ export function Game() {
             onShowLeaderboard={() => { refetch(); setShowLeaderboard(true); }}
             onMenu={handleMenu}
             user={user}
+            isZoneTest={snapshot.isZoneTest}
           />
         )}
 

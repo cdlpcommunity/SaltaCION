@@ -11,13 +11,14 @@ interface GameOverScreenProps {
   onShowLeaderboard: () => void;
   onMenu: () => void;
   user: AuthUser | null;
+  isZoneTest: boolean;
 }
 
-export function GameOverScreen({ score, coins, height, onRestart, onSubmitScore, onShowLeaderboard, onMenu, user }: GameOverScreenProps) {
+export function GameOverScreen({ score, coins, height, onRestart, onSubmitScore, onShowLeaderboard, onMenu, user, isZoneTest }: GameOverScreenProps) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || isZoneTest) return;
     let active = true;
     setStatus('sending');
     onSubmitScore(user.username.slice(0, 12))
@@ -28,7 +29,7 @@ export function GameOverScreen({ score, coins, height, onRestart, onSubmitScore,
         if (active) setStatus('error');
       });
     return () => { active = false; };
-  }, [user, onSubmitScore]);
+  }, [user, onSubmitScore, isZoneTest]);
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center z-20 px-6"
@@ -56,7 +57,14 @@ export function GameOverScreen({ score, coins, height, onRestart, onSubmitScore,
           </div>
         </div>
 
-        {user ? (
+        {isZoneTest ? (
+          <div className="flex flex-col items-center gap-2 w-56">
+            <div className="flex items-center justify-center gap-2 px-4 py-3 font-mono text-sm text-center" style={{ background: 'rgba(15,23,42,0.8)', border: '2px solid rgba(241,245,249,0.15)', borderRadius: '4px' }}>
+              <Lock size={16} className="text-[#F1F5F9]/40" />
+              <span className="text-[#F1F5F9]/50">Modo de prueba de zonas — los récords no se guardan</span>
+            </div>
+          </div>
+        ) : user ? (
           <div className="flex flex-col items-center gap-2 w-56">
             <div className="flex items-center justify-center gap-2 px-4 py-2 font-mono text-sm" style={{ background: 'rgba(15,23,42,0.8)', border: '2px solid rgba(255,90,54,0.3)', borderRadius: '4px' }}>
               <User size={16} className="text-[#FF5A36]" />

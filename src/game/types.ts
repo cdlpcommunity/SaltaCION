@@ -100,6 +100,7 @@ export interface GameSnapshot {
   zoneName: string;
   zoneSubtitle: string;
   rouletteReady: boolean;
+  isZoneTest: boolean;
 }
 
 export type ViewMode = 'auto' | 'mobile' | 'desktop';
