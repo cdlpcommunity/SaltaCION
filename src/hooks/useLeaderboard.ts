@@ -110,14 +110,16 @@ export function useLeaderboard() {
 
     const { error } = await supabase
       .from('best_scores')
-      .upsert({
-        user_id: userId,
-        player_name: name,
-        score,
-        coins,
-        height,
-        updated_at: new Date().toISOString(),
-      });
+      .upsert(
+        {
+          player_name: name,
+          score,
+          coins,
+          height,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id' },
+      );
     if (error) throw new Error(error.message);
 
     await fetchScores();
