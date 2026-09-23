@@ -27,7 +27,7 @@ interface CharacterCustomizationScreenProps {
   title?: string;
   isFirstTime?: boolean;
   spidermanUnlocked?: boolean;
-  onUnlockSpiderman?: () => void;
+  onUnlockSpiderman?: () => Promise<boolean>;
 }
 
 type Category = 'body' | 'eyes' | 'mouth' | 'hair' | 'outfit' | 'accessory';
@@ -93,16 +93,22 @@ export function CharacterCustomizationScreen({
     });
   };
 
-  const handleUnlockSubmit = () => {
-    if (passwordInput.trim() === SPIDERMAN_PASSWORD) {
-      onUnlockSpiderman?.();
-      setShowUnlockModal(false);
-      setPasswordInput('');
-      setPasswordError(null);
-      setCategory('outfit');
-    } else {
+  const handleUnlockSubmit = async () => {
+    if (passwordInput.trim() !== SPIDERMAN_PASSWORD) {
       setPasswordError('Contraseña incorrecta.');
+      return;
     }
+
+    const unlocked = onUnlockSpiderman ? await onUnlockSpiderman() : true;
+    if (!unlocked) {
+      setPasswordError('No se pudo desbloquear el traje. Intenta de nuevo.');
+      return;
+    }
+
+    setShowUnlockModal(false);
+    setPasswordInput('');
+    setPasswordError(null);
+    setCategory('outfit');
   };
 
   const categories: Category[] = ['body', 'eyes', 'mouth', 'hair', 'outfit', 'accessory'];
