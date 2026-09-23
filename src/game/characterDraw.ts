@@ -593,28 +593,54 @@ export function drawOutfit(
       ctx.fillRect(hw - 8, topY + 4, 3, 2);
       break;
     case 'spiderman':
-      ctx.fillStyle = '#dc2626';
+      // Body suit: deep red base
+      ctx.fillStyle = '#c41e1e';
       ctx.fillRect(-hw, topY, w, hh - topY - 10);
-      ctx.fillStyle = '#1e1b4b';
-      ctx.fillRect(-hw, topY, w, 2);
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(-hw + 2, topY + 4, 3, 3);
-      ctx.fillRect(hw - 5, topY + 4, 3, 3);
-      ctx.fillRect(-hw + 2, topY + 10, w - 4, 1);
-      ctx.fillRect(-hw + 2, topY + 14, w - 4, 1);
-      ctx.fillRect(-1, topY + 4, 1, 4);
-      ctx.fillRect(-1, topY + 12, 1, 4);
-      ctx.fillRect(-hw + 4, topY + 8, w - 8, 1);
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(-hw + 1, topY + 6, 1, 3);
-      ctx.fillRect(hw - 2, topY + 6, 1, 3);
-      ctx.fillRect(-hw + 5, topY + 2, 1, 3);
-      ctx.fillRect(hw - 6, topY + 2, 1, 3);
-      ctx.fillStyle = '#fbbf24';
-      ctx.fillRect(-3, topY + 8, 2, 2);
-      ctx.fillRect(1, topY + 8, 2, 2);
-      ctx.fillRect(-3, topY + 12, 2, 1);
-      ctx.fillRect(1, topY + 12, 2, 1);
+      // Darker shading at bottom
+      ctx.fillStyle = '#8b0000';
+      ctx.fillRect(-hw, hh - 12, w, 2);
+      // Black web pattern — vertical lines
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(-hw + 2, topY + 2, 1, hh - topY - 14);
+      ctx.fillRect(-1, topY + 2, 1, hh - topY - 14);
+      ctx.fillRect(hw - 3, topY + 2, 1, hh - topY - 14);
+      ctx.fillRect(-hw + 5, topY + 2, 1, hh - topY - 14);
+      ctx.fillRect(hw - 6, topY + 2, 1, hh - topY - 14);
+      // Web pattern — horizontal lines
+      ctx.fillRect(-hw + 1, topY + 5, w - 2, 1);
+      ctx.fillRect(-hw + 1, topY + 9, w - 2, 1);
+      ctx.fillRect(-hw + 1, topY + 13, w - 2, 1);
+      // Web pattern — diagonal lines
+      ctx.fillRect(-hw + 3, topY + 2, 1, 3);
+      ctx.fillRect(-hw + 4, topY + 5, 1, 4);
+      ctx.fillRect(-hw + 5, topY + 9, 1, 4);
+      ctx.fillRect(hw - 4, topY + 2, 1, 3);
+      ctx.fillRect(hw - 5, topY + 5, 1, 4);
+      ctx.fillRect(hw - 6, topY + 9, 1, 4);
+      // Central black spider emblem
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(-2, topY + 4, 4, 2);
+      ctx.fillRect(-1, topY + 6, 2, 4);
+      ctx.fillRect(-3, topY + 5, 1, 2);
+      ctx.fillRect(2, topY + 5, 1, 2);
+      ctx.fillRect(-4, topY + 7, 1, 2);
+      ctx.fillRect(3, topY + 7, 1, 2);
+      ctx.fillRect(-5, topY + 9, 2, 1);
+      ctx.fillRect(3, topY + 9, 2, 1);
+      ctx.fillRect(-4, topY + 11, 1, 1);
+      ctx.fillRect(3, topY + 11, 1, 1);
+      // Blue lower section (legs area)
+      ctx.fillStyle = '#1a3a6e';
+      ctx.fillRect(-hw, hh - 10, w, 8);
+      ctx.fillStyle = '#0d2847';
+      ctx.fillRect(-hw, hh - 4, w, 2);
+      // Web on blue section
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(-hw + 2, hh - 8, 1, 5);
+      ctx.fillRect(-1, hh - 8, 1, 5);
+      ctx.fillRect(hw - 3, hh - 8, 1, 5);
+      ctx.fillRect(-hw + 1, hh - 6, w - 2, 1);
+      ctx.fillRect(-hw + 1, hh - 3, w - 2, 1);
       break;
   }
 }
@@ -831,48 +857,99 @@ export function drawCharacterBody(
   ctx.fillRect(-hw, hh - 4, w, 4);
 
   if (customization.outfit === 'spiderman') {
-    ctx.fillStyle = '#dc2626';
-    ctx.fillRect(-hw, -hh, w, 8);
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(-hw + 4, -hh + 2, 3, 2);
-    ctx.fillRect(hw - 7, -hh + 2, 3, 2);
-    ctx.fillRect(-hw + 2, -hh + 5, 2, 1);
-    ctx.fillRect(hw - 4, -hh + 5, 2, 1);
+    // Red mask covers entire head
+    ctx.fillStyle = '#c41e1e';
+    ctx.fillRect(-hw, -hh, w, 24);
+    // Darker red shading at edges
+    ctx.fillStyle = '#8b0000';
+    ctx.fillRect(-hw, -hh, 2, 24);
+    ctx.fillRect(hw - 2, -hh, 2, 24);
+    ctx.fillRect(-hw, -hh, w, 2);
+    // Web pattern on mask — vertical lines
+    ctx.fillStyle = '#0a0a0a';
+    ctx.fillRect(-hw + 3, -hh + 3, 1, 18);
+    ctx.fillRect(-1, -hh + 3, 1, 18);
+    ctx.fillRect(hw - 4, -hh + 3, 1, 18);
+    ctx.fillRect(-hw + 6, -hh + 3, 1, 18);
+    ctx.fillRect(hw - 7, -hh + 3, 1, 18);
+    // Web pattern — horizontal lines
+    ctx.fillRect(-hw + 1, -hh + 6, w - 2, 1);
+    ctx.fillRect(-hw + 1, -hh + 12, w - 2, 1);
+    ctx.fillRect(-hw + 1, -hh + 18, w - 2, 1);
+    // Web pattern — diagonal lines
+    ctx.fillRect(-hw + 4, -hh + 3, 1, 3);
+    ctx.fillRect(-hw + 5, -hh + 6, 1, 6);
+    ctx.fillRect(-hw + 6, -hh + 12, 1, 6);
+    ctx.fillRect(hw - 5, -hh + 3, 1, 3);
+    ctx.fillRect(hw - 6, -hh + 6, 1, 6);
+    ctx.fillRect(hw - 7, -hh + 12, 1, 6);
   } else {
     drawHair(ctx, customization.hairStyle, customization.bodyColor, hw, hh);
   }
 
   if (customization.outfit === 'spiderman') {
+    // Iconic white almond-shaped eye lenses with black border
+    ctx.fillStyle = '#0a0a0a';
+    // Left lens border (teardrop shape)
+    ctx.fillRect(-hw + 5, -hh + 8, 11, 7);
+    ctx.fillRect(-hw + 4, -hh + 9, 13, 5);
+    ctx.fillRect(-hw + 3, -hh + 10, 15, 3);
+    // Right lens border
+    ctx.fillRect(hw - 16, -hh + 8, 11, 7);
+    ctx.fillRect(hw - 17, -hh + 9, 13, 5);
+    ctx.fillRect(hw - 18, -hh + 10, 15, 3);
+    // White fill — left lens
     ctx.fillStyle = '#ffffff';
-    ctx.fillRect(-hw + 7, -hh + 7, 9, 8);
-    ctx.fillRect(hw - 16, -hh + 7, 9, 8);
-    ctx.fillStyle = '#1e1b4b';
-    ctx.fillRect(-hw + 9, -hh + 9, 5, 5);
-    ctx.fillRect(hw - 14, -hh + 9, 5, 5);
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(-hw + 10, -hh + 10, 3, 3);
-    ctx.fillRect(hw - 13, -hh + 10, 3, 3);
+    ctx.fillRect(-hw + 6, -hh + 9, 9, 5);
+    ctx.fillRect(-hw + 5, -hh + 10, 11, 3);
+    // White fill — right lens
+    ctx.fillRect(hw - 15, -hh + 9, 9, 5);
+    ctx.fillRect(hw - 16, -hh + 10, 11, 3);
+    // Light gray highlight on lenses
+    ctx.fillStyle = '#e0e0e0';
+    ctx.fillRect(-hw + 6, -hh + 9, 3, 2);
+    ctx.fillRect(hw - 15, -hh + 9, 3, 2);
+    // Black web lines over lenses
+    ctx.fillStyle = '#0a0a0a';
+    ctx.fillRect(-hw + 9, -hh + 9, 1, 5);
+    ctx.fillRect(hw - 12, -hh + 9, 1, 5);
+    ctx.fillRect(-hw + 7, -hh + 11, 7, 1);
   } else {
     drawEyes(ctx, customization.eyeStyle, hw, hh, t, facing);
   }
 
   if (customization.outfit === 'spiderman') {
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(-3, -hh + 20, 6, 2);
+    // Web pattern continues over mouth area
+    ctx.fillStyle = '#0a0a0a';
+    ctx.fillRect(-hw + 3, -hh + 20, 1, 4);
+    ctx.fillRect(-1, -hh + 20, 1, 4);
+    ctx.fillRect(hw - 4, -hh + 20, 1, 4);
+    ctx.fillRect(-hw + 1, -hh + 22, w - 2, 1);
   } else {
     drawMouth(ctx, customization.mouthStyle, hw, hh);
   }
 
-  ctx.fillStyle = '#fb7185';
-  ctx.fillRect(-hw + 4, -hh + 18, 4, 3);
-  ctx.fillRect(hw - 8, -hh + 18, 4, 3);
+  if (customization.outfit !== 'spiderman') {
+    ctx.fillStyle = '#fb7185';
+    ctx.fillRect(-hw + 4, -hh + 18, 4, 3);
+    ctx.fillRect(hw - 8, -hh + 18, 4, 3);
+  }
 
-  ctx.fillStyle = darkColor;
-  ctx.fillRect(-hw + 4, hh - 8, 8, 6);
-  ctx.fillRect(hw - 12, hh - 8, 8, 6);
-  ctx.fillStyle = lightColor;
-  ctx.fillRect(-hw + 5, hh - 7, 3, 2);
-  ctx.fillRect(hw - 11, hh - 7, 3, 2);
+  if (customization.outfit === 'spiderman') {
+    ctx.fillStyle = '#1a3a6e';
+    ctx.fillRect(-hw + 4, hh - 8, 8, 6);
+    ctx.fillRect(hw - 12, hh - 8, 8, 6);
+    ctx.fillStyle = '#0d2847';
+    ctx.fillRect(-hw + 4, hh - 3, 8, 1);
+    ctx.fillRect(hw - 12, hh - 3, 8, 1);
+  } else {
+    ctx.fillStyle = darkColor;
+    ctx.fillRect(-hw + 4, hh - 8, 8, 6);
+    ctx.fillRect(hw - 12, hh - 8, 8, 6);
+    ctx.fillStyle = lightColor;
+    ctx.fillRect(-hw + 5, hh - 7, 3, 2);
+    ctx.fillRect(hw - 11, hh - 7, 3, 2);
+  }
 
   drawOutfit(ctx, customization.outfit, customization.outfitColor, hw, hh, w, h);
 

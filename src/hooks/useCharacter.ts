@@ -87,18 +87,19 @@ export function useCharacter(userId: string | null) {
       if (!userId) return false;
       const { error } = await supabase
         .from('player_customizations')
-        .upsert({
-        user_id: userId,
-        ...customizationToDb(c),
-        spiderman_unlocked: spidermanUnlocked,
-        updated_at: new Date().toISOString(),
-      });
-      if (!error) {
-        setCustomization(c);
-        setNeedsSetup(false);
-        return true;
-      }
-      return false;
+        .upsert(
+          {
+            ...customizationToDb(c),
+            spiderman_unlocked: spidermanUnlocked,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id' },
+        );
+      if (error) return false;
+
+      setCustomization(c);
+      setNeedsSetup(false);
+      return true;
     },
     [userId, spidermanUnlocked],
   );
@@ -107,12 +108,14 @@ export function useCharacter(userId: string | null) {
     if (!userId) return false;
     const { error } = await supabase
       .from('player_customizations')
-      .upsert({
-        user_id: userId,
-        ...customizationToDb(customization),
-        spiderman_unlocked: true,
-        updated_at: new Date().toISOString(),
-      });
+      .upsert(
+        {
+          ...customizationToDb(customization),
+          spiderman_unlocked: true,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id' },
+      );
     if (error) return false;
 
     setSpidermanUnlocked(true);
