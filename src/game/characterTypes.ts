@@ -146,7 +146,7 @@ export const ACCESSORY_COLORS = [
   '#e2e8f0', '#94a3b8',
 ];
 
-export const SPIDERMAN_PASSWORD = 'jasons26';
+export const SPIDERMAN_PASSWORD = 'Jasons26';
 
 export function isOutfitUnlocked(outfit: Outfit, spidermanUnlocked: boolean): boolean {
   if (outfit === 'spiderman') return spidermanUnlocked;

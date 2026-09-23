@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, Shuffle, Save, ArrowLeft, Loader2, Lock } from 'lucide-react';
+import { Check, Shuffle, Save, ArrowLeft, Loader2, Lock, Eye, EyeOff } from 'lucide-react';
 import { CharacterAvatar } from '@/components/CharacterAvatar';
 import {
   EYE_STYLES,
@@ -63,6 +63,7 @@ export function CharacterCustomizationScreen({
   const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const update = (patch: Partial<CharacterCustomization>) => {
     setChar((prev) => ({ ...prev, ...patch }));
@@ -94,14 +95,8 @@ export function CharacterCustomizationScreen({
   };
 
   const handleUnlockSubmit = async () => {
-    if (passwordInput.trim() !== SPIDERMAN_PASSWORD) {
+    if (passwordInput !== SPIDERMAN_PASSWORD) {
       setPasswordError('Contraseña incorrecta.');
-      return;
-    }
-
-    const unlocked = onUnlockSpiderman ? await onUnlockSpiderman() : true;
-    if (!unlocked) {
-      setPasswordError('No se pudo desbloquear el traje. Intenta de nuevo.');
       return;
     }
 
@@ -109,6 +104,11 @@ export function CharacterCustomizationScreen({
     setPasswordInput('');
     setPasswordError(null);
     setCategory('outfit');
+    update({ outfit: 'spiderman' });
+
+    if (onUnlockSpiderman) {
+      await onUnlockSpiderman();
+    }
   };
 
   const categories: Category[] = ['body', 'eyes', 'mouth', 'hair', 'outfit', 'accessory'];
@@ -320,25 +320,35 @@ export function CharacterCustomizationScreen({
                 Introduce la contraseña secreta para desbloquear el traje de Spiderman.
               </p>
             </div>
-            <input
-              type="password"
-              value={passwordInput}
-              onChange={(e) => {
-                setPasswordInput(e.target.value);
-                setPasswordError(null);
-              }}
-              onKeyDown={(e) => { if (e.key === 'Enter') handleUnlockSubmit(); }}
-              placeholder="Contraseña secreta"
-              className="w-full px-3 py-2.5 font-mono text-sm text-center"
-              style={{
-                background: 'rgba(15,23,42,0.8)',
-                color: '#F1F5F9',
-                border: '2px solid rgba(241,245,249,0.2)',
-                borderRadius: '4px',
-                outline: 'none',
-              }}
-              autoFocus
-            />
+            <div className="relative w-full">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={passwordInput}
+                onChange={(e) => {
+                  setPasswordInput(e.target.value);
+                  setPasswordError(null);
+                }}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleUnlockSubmit(); }}
+                placeholder="Contraseña secreta"
+                className="w-full px-3 py-2.5 pr-10 font-mono text-sm text-center"
+                style={{
+                  background: 'rgba(15,23,42,0.8)',
+                  color: '#F1F5F9',
+                  border: '2px solid rgba(241,245,249,0.2)',
+                  borderRadius: '4px',
+                  outline: 'none',
+                }}
+                autoFocus
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center"
+                style={{ color: '#F1F5F9', opacity: 0.6 }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
             {passwordError && (
               <div className="text-red-400 text-xs font-mono text-center">{passwordError}</div>
             )}
