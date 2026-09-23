@@ -119,7 +119,7 @@ export function CharacterCustomizationScreen({
       <div className="absolute top-8 left-6 w-3 h-3 animate-[pulse-glow_3s_ease-in-out_infinite]" style={{ background: 'rgba(255,90,54,0.3)' }} />
       <div className="absolute bottom-20 right-8 w-4 h-4 animate-[pulse-glow_5s_ease-in-out_infinite]" style={{ background: 'rgba(255,90,54,0.2)' }} />
 
-      <div className="customization-scroll relative z-10 w-full max-w-sm flex flex-col items-center gap-3 animate-[fadeIn_0.4s_ease-out] h-[calc(100dvh-2rem)] min-h-0 overflow-y-auto overscroll-contain px-1 pr-3">
+      <div className="relative z-10 w-full max-w-sm flex flex-col items-center gap-3 animate-[fadeIn_0.4s_ease-out] px-1">
         <h2 className="text-2xl font-black font-mono flex items-center gap-2" style={{ color: '#FF5A36', textShadow: '3px 3px 0 #0F172A' }}>
           {title}
         </h2>
@@ -423,7 +423,7 @@ function OptionGrid({
 }) {
   return (
     <div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="customization-options-scroll flex w-full gap-2 overflow-x-auto pb-2">
         {options.map((opt) => {
           const isLocked = lockedItems.includes(opt.id);
           const previewChar: CharacterCustomization = { ...char };
@@ -437,7 +437,7 @@ function OptionGrid({
             <button
               key={opt.id}
               onClick={() => onSelect(opt.id)}
-              className="relative flex flex-col items-center gap-1 p-1.5 transition-all"
+              className="relative flex w-[104px] flex-none flex-col items-center gap-1 p-1.5 transition-all"
               style={{
                 background: selected === opt.id ? 'rgba(255,90,54,0.2)' : 'rgba(15,23,42,0.6)',
                 border: selected === opt.id ? '2px solid rgba(255,90,54,0.5)' : '2px solid rgba(241,245,249,0.1)',

@@ -60,29 +60,28 @@ body,
   height: 0;
 }
 
-.customization-scroll {
+.customization-options-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 90, 54, 0.9) rgba(15, 23, 42, 0.65);
-  scrollbar-gutter: stable;
 }
 
-.customization-scroll::-webkit-scrollbar {
+.customization-options-scroll::-webkit-scrollbar {
   display: block;
-  width: 8px;
+  height: 8px;
 }
 
-.customization-scroll::-webkit-scrollbar-track {
+.customization-options-scroll::-webkit-scrollbar-track {
   background: rgba(15, 23, 42, 0.65);
   border-radius: 999px;
 }
 
-.customization-scroll::-webkit-scrollbar-thumb {
+.customization-options-scroll::-webkit-scrollbar-thumb {
   background: #ff5a36;
   border: 2px solid rgba(15, 23, 42, 0.65);
   border-radius: 999px;
 }
 
-.customization-scroll::-webkit-scrollbar-thumb:hover {
+.customization-options-scroll::-webkit-scrollbar-thumb:hover {
   background: #ff7658;
 }
 
