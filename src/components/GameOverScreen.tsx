@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { RotateCcw, Trophy, Send, User, Lock, Home } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { RotateCcw, Trophy, User, Lock, Home, Loader2, Check } from 'lucide-react';
 import type { AuthUser } from '@/lib/supabase';
 
 interface GameOverScreenProps {
@@ -14,16 +14,21 @@ interface GameOverScreenProps {
 }
 
 export function GameOverScreen({ score, coins, height, onRestart, onSubmitScore, onShowLeaderboard, onMenu, user }: GameOverScreenProps) {
-  const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
 
-  const handleSubmit = async () => {
-    if (!user || submitting) return;
-    setSubmitting(true);
-    await onSubmitScore(user.username.slice(0, 12));
-    setSubmitting(false);
-    setSubmitted(true);
-  };
+  useEffect(() => {
+    if (!user) return;
+    let active = true;
+    setStatus('sending');
+    onSubmitScore(user.username.slice(0, 12))
+      .then(() => {
+        if (active) setStatus('done');
+      })
+      .catch(() => {
+        if (active) setStatus('error');
+      });
+    return () => { active = false; };
+  }, [user, onSubmitScore]);
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center z-20 px-6"
@@ -51,39 +56,37 @@ export function GameOverScreen({ score, coins, height, onRestart, onSubmitScore,
           </div>
         </div>
 
-        {!submitted ? (
-          user ? (
-            <div className="flex flex-col gap-2 w-56">
-              <div className="flex items-center justify-center gap-2 px-4 py-2 font-mono text-sm" style={{ background: 'rgba(15,23,42,0.8)', border: '2px solid rgba(255,90,54,0.3)', borderRadius: '4px' }}>
-                <User size={16} className="text-[#FF5A36]" />
-                <span className="text-[#F1F5F9]/60">Enviando como</span>
-                <span className="text-[#FF5A36] font-bold">{user.username}</span>
-              </div>
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="flex items-center justify-center gap-2 px-4 py-2 font-bold transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
-                style={{
-                  background: '#FF5A36', color: '#FFFFFF',
-                  border: '2px solid #0F172A', borderRadius: '4px',
-                  boxShadow: '0 3px 0 #0F172A', fontFamily: 'monospace',
-                }}
-              >
-                <Send size={18} />
-                {submitting ? 'Enviando...' : 'Enviar Puntuación'}
-              </button>
+        {user ? (
+          <div className="flex flex-col items-center gap-2 w-56">
+            <div className="flex items-center justify-center gap-2 px-4 py-2 font-mono text-sm" style={{ background: 'rgba(15,23,42,0.8)', border: '2px solid rgba(255,90,54,0.3)', borderRadius: '4px' }}>
+              <User size={16} className="text-[#FF5A36]" />
+              <span className="text-[#F1F5F9]/60">Registrando como</span>
+              <span className="text-[#FF5A36] font-bold">{user.username}</span>
             </div>
-          ) : (
-            <div className="flex flex-col items-center gap-2 w-56">
-              <div className="flex items-center justify-center gap-2 px-4 py-3 font-mono text-sm text-center" style={{ background: 'rgba(15,23,42,0.8)', border: '2px solid rgba(241,245,249,0.15)', borderRadius: '4px' }}>
-                <Lock size={16} className="text-[#F1F5F9]/40" />
-                <span className="text-[#F1F5F9]/50">Inicia sesión para guardar tu puntuación en el ranking</span>
+            {status === 'sending' && (
+              <div className="flex items-center gap-2 text-[#F1F5F9]/60 text-sm font-mono">
+                <Loader2 size={16} className="animate-spin" />
+                Guardando récord...
               </div>
-            </div>
-          )
+            )}
+            {status === 'done' && (
+              <div className="flex items-center gap-2 text-sm font-mono font-bold animate-[fadeIn_0.3s_ease-out]" style={{ color: '#4ade80' }}>
+                <Check size={16} />
+                ¡Récord guardado!
+              </div>
+            )}
+            {status === 'error' && (
+              <div className="text-sm font-mono font-bold" style={{ color: '#f87171' }}>
+                No se pudo guardar el récord
+              </div>
+            )}
+          </div>
         ) : (
-          <div className="text-sm font-mono font-bold animate-[fadeIn_0.3s_ease-out]" style={{ color: '#4ade80' }}>
-            ¡Puntuación enviada!
+          <div className="flex flex-col items-center gap-2 w-56">
+            <div className="flex items-center justify-center gap-2 px-4 py-3 font-mono text-sm text-center" style={{ background: 'rgba(15,23,42,0.8)', border: '2px solid rgba(241,245,249,0.15)', borderRadius: '4px' }}>
+              <Lock size={16} className="text-[#F1F5F9]/40" />
+              <span className="text-[#F1F5F9]/50">Inicia sesión para guardar tu récord en el ranking</span>
+            </div>
           </div>
         )}
 

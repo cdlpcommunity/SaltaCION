@@ -127,12 +127,20 @@ export function Game() {
   useEffect(() => {
     if (snapshot.state === 'gameover' && !submittedRef.current) {
       submittedRef.current = true;
+      if (user) {
+        submitScore(user.username.slice(0, 12), snapshot.score, snapshot.coins, snapshot.height);
+      }
     }
-  }, [snapshot.state]);
+  }, [snapshot.state, user, submitScore, snapshot.score, snapshot.coins, snapshot.height]);
 
   const handleStart = useCallback(() => {
     submittedRef.current = false;
-    engineRef.current?.startGame();
+    const engine = engineRef.current;
+    if (engine) {
+      engine.inputLeft = false;
+      engine.inputRight = false;
+      engine.startGame();
+    }
   }, []);
 
   const handlePause = useCallback(() => {
@@ -145,7 +153,12 @@ export function Game() {
 
   const handleRestart = useCallback(() => {
     submittedRef.current = false;
-    engineRef.current?.startGame();
+    const engine = engineRef.current;
+    if (engine) {
+      engine.inputLeft = false;
+      engine.inputRight = false;
+      engine.startGame();
+    }
   }, []);
 
   const handleMenu = useCallback(() => {
@@ -159,7 +172,12 @@ export function Game() {
   const handleZoneTest = useCallback((zoneIndex: number) => {
     setShowZoneTest(false);
     submittedRef.current = false;
-    engineRef.current?.startZoneTest(zoneIndex);
+    const engine = engineRef.current;
+    if (engine) {
+      engine.inputLeft = false;
+      engine.inputRight = false;
+      engine.startZoneTest(zoneIndex);
+    }
   }, []);
 
   const handleMute = useCallback(() => {

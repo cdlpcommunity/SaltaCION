@@ -36,19 +36,27 @@ export function useLeaderboard() {
     setLoading(true);
 
     const { data, error } = await supabase
-      .from('scores')
-      .select('id, player_name, score, coins, height, user_id, created_at')
-      .order('score', { ascending: false })
-      .limit(10);
+      .from('best_scores')
+      .select('user_id, player_name, score, coins, height, updated_at')
+      .order('score', { ascending: false });
     if (error || !data) {
       setScores([]);
       setLoading(false);
       return;
     }
 
-    setScores(data as ScoreEntry[]);
+    const mapped: ScoreEntry[] = (data as (Omit<ScoreEntry, 'id' | 'created_at' | 'user_id'> & { user_id: string; updated_at: string })[]).map((row) => ({
+      id: row.user_id,
+      player_name: row.player_name,
+      score: row.score,
+      coins: row.coins,
+      height: row.height,
+      user_id: row.user_id,
+      created_at: row.updated_at,
+    }));
+    setScores(mapped);
 
-    const userIds = (data as ScoreEntry[])
+    const userIds = mapped
       .map((s) => s.user_id)
       .filter((id): id is string => id !== null);
 
@@ -75,9 +83,26 @@ export function useLeaderboard() {
     const userId = sessionData.session?.user?.id;
     if (!userId) return false;
 
+    const { data: existing } = await supabase
+      .from('best_scores')
+      .select('score')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (existing && (existing as { score: number }).score >= score) {
+      return true;
+    }
+
     const { error } = await supabase
-      .from('scores')
-      .insert({ player_name: name, score, coins, height, user_id: userId });
+      .from('best_scores')
+      .upsert({
+        user_id: userId,
+        player_name: name,
+        score,
+        coins,
+        height,
+        updated_at: new Date().toISOString(),
+      });
     if (!error) {
       await fetchScores();
     }

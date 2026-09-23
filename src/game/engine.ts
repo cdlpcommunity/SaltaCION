@@ -108,6 +108,8 @@ export class GameEngine {
     this.lastSnapKey = '';
     platformIdCounter = 0;
     enemyIdCounter = 0;
+    this.inputLeft = false;
+    this.inputRight = false;
 
     this.generateInitialPlatforms();
     soundManager.play('start');
@@ -126,6 +128,8 @@ export class GameEngine {
     this.zoneTransitionTimer = 0;
     this.zoneAnnouncement = 0;
     this.lastSnapKey = '';
+    this.inputLeft = false;
+    this.inputRight = false;
     this.emitState();
   }
 
@@ -163,6 +167,8 @@ export class GameEngine {
     this.zoneTransition = 0;
     this.zoneTransitionTimer = 0;
     this.zoneAnnouncement = 0;
+    this.inputLeft = false;
+    this.inputRight = false;
     this.emitState();
   }
 
