@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes signSway {
+  0%   { transform: rotate(-1.2deg); }
+  25%  { transform: rotate(0.8deg); }
+  50%  { transform: rotate(-0.6deg); }
+  75%  { transform: rotate(1deg); }
+  100% { transform: rotate(-1.2deg); }
+}
+
+@keyframes ropeSway {
+  0%, 100% { transform: rotate(-3.5deg); }
+  50% { transform: rotate(3.5deg); }
+}
+
+@keyframes zoneEnter {
+  0%   { opacity: 0; transform: translateX(28px) rotate(6deg); }
+  60%  { opacity: 1; transform: translateX(-4px) rotate(-2deg); }
+  100% { opacity: 1; transform: translateX(0) rotate(0deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+  scrollbar-width: none;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+canvas {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
