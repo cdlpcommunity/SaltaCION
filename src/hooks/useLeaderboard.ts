@@ -35,18 +35,26 @@ export function useLeaderboard() {
   const fetchScores = useCallback(async () => {
     setLoading(true);
 
-    const { data, error } = await supabase
-      .from('best_scores')
-      .select('user_id, player_name, score, coins, height, updated_at')
-      .order('score', { ascending: false });
-    if (error || !data) {
+    const [{ data: bestData, error: bestError }, { data: historyData, error: historyError }] = await Promise.all([
+      supabase
+        .from('best_scores')
+        .select('user_id, player_name, score, coins, height, updated_at')
+        .order('score', { ascending: false }),
+      supabase
+        .from('scores')
+        .select('id, user_id, player_name, score, coins, height, created_at')
+        .order('score', { ascending: false }),
+    ]);
+
+    if (bestError || historyError || !bestData || !historyData) {
       setScores([]);
+      setCustomizations({});
       setLoading(false);
       return;
     }
 
-    const mapped: ScoreEntry[] = (data as (Omit<ScoreEntry, 'id' | 'created_at' | 'user_id'> & { user_id: string; updated_at: string })[]).map((row) => ({
-      id: row.user_id,
+    const bestScores: ScoreEntry[] = (bestData as (Omit<ScoreEntry, 'id' | 'created_at' | 'user_id'> & { user_id: string; updated_at: string })[]).map((row) => ({
+      id: `best-${row.user_id}`,
       player_name: row.player_name,
       score: row.score,
       coins: row.coins,
@@ -54,6 +62,8 @@ export function useLeaderboard() {
       user_id: row.user_id,
       created_at: row.updated_at,
     }));
+    const historicalScores = historyData as ScoreEntry[];
+    const mapped = [...bestScores, ...historicalScores].sort((a, b) => b.score - a.score);
     setScores(mapped);
 
     const userIds = mapped
