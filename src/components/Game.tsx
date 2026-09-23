@@ -227,10 +227,17 @@ export function Game() {
   const showMenuCustomization = showCustomization && user && !showFirstTimeCustomization;
 
   return (
-    <div className="relative w-full h-screen overflow-hidden flex items-center justify-center select-none touch-none" style={{ background: '#0F172A' }}>
+    <div
+      className="relative w-full h-[100dvh] overflow-hidden flex items-center justify-center select-none touch-none"
+      style={{ background: '#0F172A' }}
+    >
       <div
         className="relative shadow-2xl"
-        style={{
+        style={isMobile ? {
+          width: '100vw',
+          height: '100dvh',
+          maxWidth: 'none',
+        } : {
           width: 'min(100vw, calc(100vh * 400 / 600))',
           height: 'min(100vh, calc(100vw * 600 / 400))',
           maxWidth: '500px',

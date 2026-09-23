@@ -46,6 +46,14 @@ body,
   overflow: hidden;
 }
 
+@supports (height: 100dvh) {
+  html,
+  body,
+  #root {
+    height: 100dvh;
+  }
+}
+
 *::-webkit-scrollbar {
   display: none;
   width: 0;
