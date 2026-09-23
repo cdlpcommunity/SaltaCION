@@ -43,7 +43,6 @@ export function Game() {
   const { user, loading: authLoading, signUp, signIn, signOut } = useAuth();
   const { scores, customizations, loading: lbLoading, submitScore, refetch } = useLeaderboard();
   const { customization, loading: charLoading, needsSetup, saveCustomization } = useCharacter(user?.id ?? null);
-  const submittedRef = useRef(false);
 
   const effectiveView = viewMode === 'auto' ? (isMobile ? 'mobile' : 'desktop') : viewMode;
   const showMobileControls = effectiveView === 'mobile';
@@ -103,7 +102,6 @@ export function Game() {
       if (down && e.key === ' ') {
         if (engine.state === 'menu') engine.startGame();
         else if (engine.state === 'gameover') {
-          submittedRef.current = false;
           engine.startGame();
         }
         else if (engine.state === 'paused') engine.resumeGame();
@@ -124,17 +122,7 @@ export function Game() {
     };
   }, []);
 
-  useEffect(() => {
-    if (snapshot.state === 'gameover' && !submittedRef.current) {
-      submittedRef.current = true;
-      if (user) {
-        submitScore(user.username.slice(0, 12), snapshot.score, snapshot.coins, snapshot.height);
-      }
-    }
-  }, [snapshot.state, user, submitScore, snapshot.score, snapshot.coins, snapshot.height]);
-
   const handleStart = useCallback(() => {
-    submittedRef.current = false;
     const engine = engineRef.current;
     if (engine) {
       engine.inputLeft = false;
@@ -152,7 +140,6 @@ export function Game() {
   }, []);
 
   const handleRestart = useCallback(() => {
-    submittedRef.current = false;
     const engine = engineRef.current;
     if (engine) {
       engine.inputLeft = false;
@@ -171,7 +158,6 @@ export function Game() {
 
   const handleZoneTest = useCallback((zoneIndex: number) => {
     setShowZoneTest(false);
-    submittedRef.current = false;
     const engine = engineRef.current;
     if (engine) {
       engine.inputLeft = false;

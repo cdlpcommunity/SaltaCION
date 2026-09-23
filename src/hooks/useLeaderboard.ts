@@ -83,13 +83,16 @@ export function useLeaderboard() {
     const userId = sessionData.session?.user?.id;
     if (!userId) return false;
 
-    const { data: existing } = await supabase
+    const { data: existing, error: selError } = await supabase
       .from('best_scores')
       .select('score')
       .eq('user_id', userId)
       .maybeSingle();
 
+    if (selError) throw new Error(selError.message);
+
     if (existing && (existing as { score: number }).score >= score) {
+      await fetchScores();
       return true;
     }
 
@@ -103,10 +106,10 @@ export function useLeaderboard() {
         height,
         updated_at: new Date().toISOString(),
       });
-    if (!error) {
-      await fetchScores();
-    }
-    return !error;
+    if (error) throw new Error(error.message);
+
+    await fetchScores();
+    return true;
   }, [fetchScores]);
 
   useEffect(() => {
