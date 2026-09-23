@@ -42,7 +42,7 @@ export function Game() {
   const [justSignedUp, setJustSignedUp] = useState(false);
   const { user, loading: authLoading, signUp, signIn, signOut } = useAuth();
   const { scores, customizations, loading: lbLoading, submitScore, refetch } = useLeaderboard();
-  const { customization, loading: charLoading, needsSetup, saveCustomization } = useCharacter(user?.id ?? null);
+  const { customization, loading: charLoading, needsSetup, saveCustomization, spidermanUnlocked, unlockSpiderman } = useCharacter(user?.id ?? null);
 
   const effectiveView = viewMode === 'auto' ? (isMobile ? 'mobile' : 'desktop') : viewMode;
   const showMobileControls = effectiveView === 'mobile';
@@ -314,6 +314,8 @@ export function Game() {
             onCancel={handleCancelCustomization}
             title="¡Crea tu personaje!"
             isFirstTime
+            spidermanUnlocked={spidermanUnlocked}
+            onUnlockSpiderman={unlockSpiderman}
           />
         )}
 
@@ -323,6 +325,8 @@ export function Game() {
             onSave={handleSaveCustomization}
             onCancel={handleCancelCustomization}
             title="Personaliza tu personaje"
+            spidermanUnlocked={spidermanUnlocked}
+            onUnlockSpiderman={unlockSpiderman}
           />
         )}
 

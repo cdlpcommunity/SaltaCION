@@ -1,17 +1,20 @@
 import { useState } from 'react';
-import { Check, Shuffle, Save, ArrowLeft, Loader2 } from 'lucide-react';
+import { Check, Shuffle, Save, ArrowLeft, Loader2, Lock } from 'lucide-react';
 import { CharacterAvatar } from '@/components/CharacterAvatar';
 import {
   EYE_STYLES,
+  MOUTH_STYLES,
   HAIR_STYLES,
   OUTFITS,
   ACCESSORIES,
   BODY_COLORS,
   OUTFIT_COLORS,
   ACCESSORY_COLORS,
-  DEFAULT_CUSTOMIZATION,
+  SPIDERMAN_PASSWORD,
+  isOutfitUnlocked,
   type CharacterCustomization,
   type EyeStyle,
+  type MouthStyle,
   type HairStyle,
   type Outfit,
   type Accessory,
@@ -23,19 +26,23 @@ interface CharacterCustomizationScreenProps {
   onCancel: () => void;
   title?: string;
   isFirstTime?: boolean;
+  spidermanUnlocked?: boolean;
+  onUnlockSpiderman?: () => void;
 }
 
-type Category = 'body' | 'eyes' | 'hair' | 'outfit' | 'accessory';
+type Category = 'body' | 'eyes' | 'mouth' | 'hair' | 'outfit' | 'accessory';
 
 const CATEGORY_LABELS: Record<Category, string> = {
   body: 'Cuerpo',
   eyes: 'Ojos',
+  mouth: 'Boca',
   hair: 'Pelo',
   outfit: 'Ropa',
   accessory: 'Accesorios',
 };
 
 const ALL_EYE_STYLES = EYE_STYLES;
+const ALL_MOUTH_STYLES = MOUTH_STYLES;
 const ALL_HAIR_STYLES = HAIR_STYLES;
 const ALL_OUTFITS = OUTFITS;
 const ALL_ACCESSORIES = ACCESSORIES;
@@ -46,11 +53,16 @@ export function CharacterCustomizationScreen({
   onCancel,
   title = 'Personaliza tu personaje',
   isFirstTime = false,
+  spidermanUnlocked = false,
+  onUnlockSpiderman,
 }: CharacterCustomizationScreenProps) {
   const [char, setChar] = useState<CharacterCustomization>(initial);
   const [category, setCategory] = useState<Category>('body');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showUnlockModal, setShowUnlockModal] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const update = (patch: Partial<CharacterCustomization>) => {
     setChar((prev) => ({ ...prev, ...patch }));
@@ -68,18 +80,32 @@ export function CharacterCustomizationScreen({
 
   const handleRandom = () => {
     const random = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
+    const availableOutfits = ALL_OUTFITS.filter((o) => isOutfitUnlocked(o.id, spidermanUnlocked));
     setChar({
       bodyColor: random(BODY_COLORS),
       eyeStyle: random(ALL_EYE_STYLES).id as EyeStyle,
+      mouthStyle: random(ALL_MOUTH_STYLES).id as MouthStyle,
       hairStyle: random(ALL_HAIR_STYLES).id as HairStyle,
-      outfit: random(ALL_OUTFITS).id as Outfit,
+      outfit: random(availableOutfits).id as Outfit,
       outfitColor: random(OUTFIT_COLORS),
       accessory: random(ALL_ACCESSORIES).id as Accessory,
       accessoryColor: random(ACCESSORY_COLORS),
     });
   };
 
-  const categories: Category[] = ['body', 'eyes', 'hair', 'outfit', 'accessory'];
+  const handleUnlockSubmit = () => {
+    if (passwordInput.trim() === SPIDERMAN_PASSWORD) {
+      onUnlockSpiderman?.();
+      setShowUnlockModal(false);
+      setPasswordInput('');
+      setPasswordError(null);
+      setCategory('outfit');
+    } else {
+      setPasswordError('Contraseña incorrecta.');
+    }
+  };
+
+  const categories: Category[] = ['body', 'eyes', 'mouth', 'hair', 'outfit', 'accessory'];
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center z-30 overflow-hidden px-4 py-4"
@@ -154,6 +180,15 @@ export function CharacterCustomizationScreen({
               previewType="eyes"
             />
           )}
+          {category === 'mouth' && (
+            <OptionGrid
+              options={ALL_MOUTH_STYLES}
+              selected={char.mouthStyle}
+              onSelect={(id) => update({ mouthStyle: id as MouthStyle })}
+              char={char}
+              previewType="mouth"
+            />
+          )}
           {category === 'hair' && (
             <OptionGrid
               options={ALL_HAIR_STYLES}
@@ -168,11 +203,18 @@ export function CharacterCustomizationScreen({
               <OptionGrid
                 options={ALL_OUTFITS}
                 selected={char.outfit}
-                onSelect={(id) => update({ outfit: id as Outfit })}
+                onSelect={(id) => {
+                  if (id === 'spiderman' && !spidermanUnlocked) {
+                    setShowUnlockModal(true);
+                    return;
+                  }
+                  update({ outfit: id as Outfit });
+                }}
                 char={char}
                 previewType="outfit"
+                lockedItems={spidermanUnlocked ? [] : ['spiderman']}
               />
-              {char.outfit !== 'none' && (
+              {char.outfit !== 'none' && char.outfit !== 'spiderman' && (
                 <ColorPicker
                   label="Color de ropa"
                   colors={OUTFIT_COLORS}
@@ -254,6 +296,76 @@ export function CharacterCustomizationScreen({
           </button>
         </div>
       </div>
+
+      {/* Spiderman Unlock Modal */}
+      {showUnlockModal && (
+        <div className="absolute inset-0 z-40 flex items-center justify-center" style={{ background: 'rgba(15,23,42,0.9)' }}>
+          <div className="w-full max-w-xs flex flex-col gap-4 p-6" style={{
+            background: 'linear-gradient(180deg, #1e293b 0%, #0F172A 100%)',
+            borderRadius: '10px',
+            border: '2px solid rgba(220,38,38,0.4)',
+          }}>
+            <div className="flex flex-col items-center gap-2">
+              <Lock size={32} color="#dc2626" />
+              <h3 className="text-xl font-black font-mono" style={{ color: '#dc2626', textShadow: '2px 2px 0 #0F172A' }}>
+                Traje Bloqueado
+              </h3>
+              <p className="text-sm font-mono text-center" style={{ color: '#F1F5F9' }}>
+                Introduce la contraseña secreta para desbloquear el traje de Spiderman.
+              </p>
+            </div>
+            <input
+              type="password"
+              value={passwordInput}
+              onChange={(e) => {
+                setPasswordInput(e.target.value);
+                setPasswordError(null);
+              }}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleUnlockSubmit(); }}
+              placeholder="Contraseña secreta"
+              className="w-full px-3 py-2.5 font-mono text-sm text-center"
+              style={{
+                background: 'rgba(15,23,42,0.8)',
+                color: '#F1F5F9',
+                border: '2px solid rgba(241,245,249,0.2)',
+                borderRadius: '4px',
+                outline: 'none',
+              }}
+              autoFocus
+            />
+            {passwordError && (
+              <div className="text-red-400 text-xs font-mono text-center">{passwordError}</div>
+            )}
+            <div className="flex gap-2">
+              <button
+                onClick={() => { setShowUnlockModal(false); setPasswordInput(''); setPasswordError(null); }}
+                className="flex-1 px-4 py-2.5 font-mono font-bold text-sm"
+                style={{
+                  background: 'rgba(15,23,42,0.8)',
+                  color: '#F1F5F9',
+                  border: '2px solid rgba(241,245,249,0.2)',
+                  borderRadius: '4px',
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleUnlockSubmit}
+                className="flex-1 px-4 py-2.5 font-mono font-bold text-sm"
+                style={{
+                  background: '#dc2626',
+                  color: '#FFFFFF',
+                  border: '2px solid #0F172A',
+                  borderRadius: '4px',
+                  boxShadow: '0 3px 0 #0F172A',
+                }}
+              >
+                Desbloquear
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -300,19 +412,23 @@ function OptionGrid({
   onSelect,
   char,
   previewType,
+  lockedItems = [],
 }: {
-  options: { id: string; label: string }[];
+  options: { id: string; label: string; secret?: boolean }[];
   selected: string;
   onSelect: (id: string) => void;
   char: CharacterCustomization;
   previewType: string;
+  lockedItems?: string[];
 }) {
   return (
     <div>
       <div className="grid grid-cols-3 gap-2">
         {options.map((opt) => {
+          const isLocked = lockedItems.includes(opt.id);
           const previewChar: CharacterCustomization = { ...char };
           if (previewType === 'eyes') previewChar.eyeStyle = opt.id as EyeStyle;
+          if (previewType === 'mouth') previewChar.mouthStyle = opt.id as MouthStyle;
           if (previewType === 'hair') previewChar.hairStyle = opt.id as HairStyle;
           if (previewType === 'outfit') previewChar.outfit = opt.id as Outfit;
           if (previewType === 'accessory') previewChar.accessory = opt.id as Accessory;
@@ -321,14 +437,20 @@ function OptionGrid({
             <button
               key={opt.id}
               onClick={() => onSelect(opt.id)}
-              className="flex flex-col items-center gap-1 p-1.5 transition-all"
+              className="relative flex flex-col items-center gap-1 p-1.5 transition-all"
               style={{
                 background: selected === opt.id ? 'rgba(255,90,54,0.2)' : 'rgba(15,23,42,0.6)',
                 border: selected === opt.id ? '2px solid rgba(255,90,54,0.5)' : '2px solid rgba(241,245,249,0.1)',
                 borderRadius: '4px',
               }}
             >
-              <CharacterAvatar customization={previewChar} size={44} />
+              {isLocked ? (
+                <div className="flex items-center justify-center" style={{ width: 44, height: 44 }}>
+                  <Lock size={20} color="#dc2626" />
+                </div>
+              ) : (
+                <CharacterAvatar customization={previewChar} size={44} />
+              )}
               <span className="text-[10px] font-mono" style={{ color: selected === opt.id ? '#FF5A36' : '#F1F5F9' }}>
                 {opt.label}
               </span>

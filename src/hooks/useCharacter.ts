@@ -8,17 +8,20 @@ import {
 interface DbCustomization {
   body_color: string;
   eye_style: string;
+  mouth_style: string | null;
   hair_style: string;
   outfit: string;
   outfit_color: string;
   accessory: string;
   accessory_color: string;
+  spiderman_unlocked: boolean | null;
 }
 
 function dbToCustomization(db: DbCustomization): CharacterCustomization {
   return {
     bodyColor: db.body_color,
     eyeStyle: db.eye_style as CharacterCustomization['eyeStyle'],
+    mouthStyle: (db.mouth_style ?? 'smile') as CharacterCustomization['mouthStyle'],
     hairStyle: db.hair_style as CharacterCustomization['hairStyle'],
     outfit: db.outfit as CharacterCustomization['outfit'],
     outfitColor: db.outfit_color,
@@ -31,6 +34,7 @@ function customizationToDb(c: CharacterCustomization): Record<string, string> {
   return {
     body_color: c.bodyColor,
     eye_style: c.eyeStyle,
+    mouth_style: c.mouthStyle,
     hair_style: c.hairStyle,
     outfit: c.outfit,
     outfit_color: c.outfitColor,
@@ -43,28 +47,33 @@ export function useCharacter(userId: string | null) {
   const [customization, setCustomization] = useState<CharacterCustomization>(DEFAULT_CUSTOMIZATION);
   const [loading, setLoading] = useState(true);
   const [needsSetup, setNeedsSetup] = useState(false);
+  const [spidermanUnlocked, setSpidermanUnlocked] = useState(false);
 
   const fetchCustomization = useCallback(async () => {
     if (!userId) {
       setCustomization(DEFAULT_CUSTOMIZATION);
       setLoading(false);
       setNeedsSetup(false);
+      setSpidermanUnlocked(false);
       return;
     }
 
     setLoading(true);
     const { data, error } = await supabase
       .from('player_customizations')
-      .select('body_color, eye_style, hair_style, outfit, outfit_color, accessory, accessory_color')
+      .select('body_color, eye_style, mouth_style, hair_style, outfit, outfit_color, accessory, accessory_color, spiderman_unlocked')
       .eq('user_id', userId)
       .maybeSingle();
 
     if (error || !data) {
       setCustomization(DEFAULT_CUSTOMIZATION);
       setNeedsSetup(true);
+      setSpidermanUnlocked(false);
     } else {
-      setCustomization(dbToCustomization(data as DbCustomization));
+      const dbRow = data as DbCustomization;
+      setCustomization(dbToCustomization(dbRow));
       setNeedsSetup(false);
+      setSpidermanUnlocked(dbRow.spiderman_unlocked === true);
     }
     setLoading(false);
   }, [userId]);
@@ -89,6 +98,19 @@ export function useCharacter(userId: string | null) {
     [userId],
   );
 
+  const unlockSpiderman = useCallback(async (): Promise<boolean> => {
+    if (!userId) return false;
+    const { error } = await supabase
+      .from('player_customizations')
+      .update({ spiderman_unlocked: true, updated_at: new Date().toISOString() })
+      .eq('user_id', userId);
+    if (!error) {
+      setSpidermanUnlocked(true);
+      return true;
+    }
+    return false;
+  }, [userId]);
+
   const markSetupDone = useCallback(() => {
     setNeedsSetup(false);
   }, [userId]);
@@ -100,5 +122,7 @@ export function useCharacter(userId: string | null) {
     saveCustomization,
     refetch: fetchCustomization,
     markSetupDone,
+    spidermanUnlocked,
+    unlockSpiderman,
   };
 }

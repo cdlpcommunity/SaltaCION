@@ -8,6 +8,7 @@ import {
 interface DbCustomization {
   body_color: string;
   eye_style: string;
+  mouth_style: string | null;
   hair_style: string;
   outfit: string;
   outfit_color: string;
@@ -19,6 +20,7 @@ function dbToCustomization(db: DbCustomization): CharacterCustomization {
   return {
     bodyColor: db.body_color,
     eyeStyle: db.eye_style as CharacterCustomization['eyeStyle'],
+    mouthStyle: (db.mouth_style ?? 'smile') as CharacterCustomization['mouthStyle'],
     hairStyle: db.hair_style as CharacterCustomization['hairStyle'],
     outfit: db.outfit as CharacterCustomization['outfit'],
     outfitColor: db.outfit_color,
@@ -73,7 +75,7 @@ export function useLeaderboard() {
     if (userIds.length > 0) {
       const { data: custData } = await supabase
         .from('player_customizations')
-        .select('user_id, body_color, eye_style, hair_style, outfit, outfit_color, accessory, accessory_color')
+        .select('user_id, body_color, eye_style, mouth_style, hair_style, outfit, outfit_color, accessory, accessory_color')
         .in('user_id', userIds);
 
       if (custData) {
