@@ -17,16 +17,20 @@ interface DbCustomization {
   spiderman_unlocked: boolean | null;
 }
 
+function isValidHex(c: string | null | undefined): boolean {
+  return typeof c === 'string' && /^#[0-9a-fA-F]{6}$/.test(c);
+}
+
 function dbToCustomization(db: DbCustomization): CharacterCustomization {
   return {
-    bodyColor: db.body_color,
+    bodyColor: isValidHex(db.body_color) ? db.body_color : DEFAULT_CUSTOMIZATION.bodyColor,
     eyeStyle: db.eye_style as CharacterCustomization['eyeStyle'],
     mouthStyle: (db.mouth_style ?? 'smile') as CharacterCustomization['mouthStyle'],
     hairStyle: db.hair_style as CharacterCustomization['hairStyle'],
     outfit: db.outfit as CharacterCustomization['outfit'],
-    outfitColor: db.outfit_color,
+    outfitColor: isValidHex(db.outfit_color) ? db.outfit_color : DEFAULT_CUSTOMIZATION.outfitColor,
     accessory: db.accessory as CharacterCustomization['accessory'],
-    accessoryColor: db.accessory_color,
+    accessoryColor: isValidHex(db.accessory_color) ? db.accessory_color : DEFAULT_CUSTOMIZATION.accessoryColor,
   };
 }
 

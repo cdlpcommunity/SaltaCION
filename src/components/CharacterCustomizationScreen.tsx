@@ -437,12 +437,20 @@ function OptionGrid({
   previewType: string;
   lockedItems?: string[];
 }) {
+  const isSpidermanActive = char.outfit === 'spiderman' && previewType !== 'outfit';
+
   return (
     <div>
+      {isSpidermanActive && (
+        <div className="text-[10px] font-mono text-center mb-2 px-2 py-1.5" style={{ color: '#fbbf24', background: 'rgba(251,191,36,0.08)', borderRadius: '4px', border: '1px solid rgba(251,191,36,0.2)' }}>
+          Llevas el traje de Spiderman: ojos, pelo y boca no se ven. Cambia de ropa para verlos.
+        </div>
+      )}
       <div className="customization-options-scroll flex w-full gap-2 overflow-x-auto pb-2">
         {options.map((opt) => {
           const isLocked = lockedItems.includes(opt.id);
           const previewChar: CharacterCustomization = { ...char };
+          if (isSpidermanActive) previewChar.outfit = 'none' as Outfit;
           if (previewType === 'eyes') previewChar.eyeStyle = opt.id as EyeStyle;
           if (previewType === 'mouth') previewChar.mouthStyle = opt.id as MouthStyle;
           if (previewType === 'hair') previewChar.hairStyle = opt.id as HairStyle;

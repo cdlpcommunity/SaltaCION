@@ -1,7 +1,9 @@
 import type { CharacterCustomization } from './characterTypes';
 
 export function shadeColor(hex: string, percent: number): string {
-  const num = parseInt(hex.replace('#', ''), 16);
+  const cleaned = hex?.replace('#', '') ?? '';
+  const num = parseInt(cleaned, 16);
+  if (isNaN(num)) return '#808080';
   const r = Math.max(0, Math.min(255, (num >> 16) + Math.round(255 * percent)));
   const g = Math.max(0, Math.min(255, ((num >> 8) & 0xff) + Math.round(255 * percent)));
   const b = Math.max(0, Math.min(255, (num & 0xff) + Math.round(255 * percent)));
@@ -782,20 +784,23 @@ export function drawAccessory(
       ctx.fillRect(hw - 6, -hh - 9, 3, 1);
       break;
     case 'eyepatch':
-      ctx.fillStyle = '#1e1b4b';
+      ctx.fillStyle = shadeColor(color, -0.3);
       ctx.fillRect(-hw + 6, -hh + 7, 10, 8);
-      ctx.fillStyle = '#0F172A';
+      ctx.fillStyle = color;
       ctx.fillRect(-hw + 7, -hh + 8, 8, 6);
       ctx.fillStyle = '#475569';
       ctx.fillRect(-hw + 5, -hh + 10, 2, 2);
       ctx.fillRect(-hw + 16, -hh + 10, 2, 2);
       break;
     case 'mustache':
-      ctx.fillStyle = '#1e1b4b';
+      ctx.fillStyle = shadeColor(color, -0.3);
       ctx.fillRect(-hw + 3, -hh + 18, 6, 2);
       ctx.fillRect(hw - 9, -hh + 18, 6, 2);
       ctx.fillRect(-hw + 5, -hh + 20, 4, 1);
       ctx.fillRect(hw - 9, -hh + 20, 4, 1);
+      ctx.fillStyle = color;
+      ctx.fillRect(-hw + 4, -hh + 18, 4, 2);
+      ctx.fillRect(hw - 8, -hh + 18, 4, 2);
       break;
     case 'feather':
       ctx.fillStyle = color;

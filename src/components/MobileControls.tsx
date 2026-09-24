@@ -12,13 +12,24 @@ export function MobileControls({ onInput }: MobileControlsProps) {
     onInput(dirs.includes('left'), dirs.includes('right'));
   }, [onInput]);
 
+  const getSide = (clientX: number): 'left' | 'right' => {
+    return clientX < window.innerWidth / 2 ? 'left' : 'right';
+  };
+
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     const target = e.currentTarget as HTMLElement;
-    const rect = target.getBoundingClientRect();
-    const side = e.clientX < rect.left + rect.width / 2 ? 'left' : 'right';
-    activePointers.current.set(e.pointerId, side);
+    activePointers.current.set(e.pointerId, getSide(e.clientX));
     target.setPointerCapture(e.pointerId);
     update();
+  }, [update]);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!activePointers.current.has(e.pointerId)) return;
+    const newSide = getSide(e.clientX);
+    if (activePointers.current.get(e.pointerId) !== newSide) {
+      activePointers.current.set(e.pointerId, newSide);
+      update();
+    }
   }, [update]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
@@ -31,6 +42,7 @@ export function MobileControls({ onInput }: MobileControlsProps) {
       className="absolute left-0 right-0 bottom-0 z-10 pointer-events-auto touch-none"
       style={{ height: '50%', WebkitTapHighlightColor: 'transparent' }}
       onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >

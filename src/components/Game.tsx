@@ -93,16 +93,26 @@ export function Game() {
         return;
       }
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-        engine.inputLeft = down;
+        if (engine.state === 'playing') {
+          engine.inputLeft = down;
+        }
         if (down) e.preventDefault();
       }
       if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-        engine.inputRight = down;
+        if (engine.state === 'playing') {
+          engine.inputRight = down;
+        }
         if (down) e.preventDefault();
       }
       if (down && e.key === ' ') {
-        if (engine.state === 'menu') engine.startGame();
+        if (engine.state === 'menu') {
+          engine.inputLeft = false;
+          engine.inputRight = false;
+          engine.startGame();
+        }
         else if (engine.state === 'gameover') {
+          engine.inputLeft = false;
+          engine.inputRight = false;
           engine.startGame();
         }
         else if (engine.state === 'paused') engine.resumeGame();
@@ -115,11 +125,19 @@ export function Game() {
     };
     const kd = (e: KeyboardEvent) => handleKey(e, true);
     const ku = (e: KeyboardEvent) => handleKey(e, false);
+    const handleBlur = () => {
+      const engine = engineRef.current;
+      if (!engine) return;
+      engine.inputLeft = false;
+      engine.inputRight = false;
+    };
     window.addEventListener('keydown', kd);
     window.addEventListener('keyup', ku);
+    window.addEventListener('blur', handleBlur);
     return () => {
       window.removeEventListener('keydown', kd);
       window.removeEventListener('keyup', ku);
+      window.removeEventListener('blur', handleBlur);
     };
   }, []);
 
