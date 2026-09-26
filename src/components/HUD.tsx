@@ -351,7 +351,7 @@ export function HUD({ coins, height, lives, hasJetpack, hasPropeller, hasShield,
             {lives > 1 && (
               <div className="px-2 py-1 flex items-center gap-1" style={{ background: 'rgba(15,23,42,0.8)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '3px' }}>
                 <span className="text-[#ef4444] text-xs">❤</span>
-                <span className="text-[#F1F5F9] font-mono text-xs font-bold">{lives}</span>
+                <span className="text-[#F1F5F9] font-mono text-xs font-bold">+{lives - 1}</span>
               </div>
             )}
           </div>
