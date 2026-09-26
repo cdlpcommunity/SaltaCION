@@ -3,7 +3,6 @@ import { RotateCcw, Trophy, User, Lock, Home, Loader2, Check } from 'lucide-reac
 import type { AuthUser } from '@/lib/supabase';
 
 interface GameOverScreenProps {
-  score: number;
   coins: number;
   height: number;
   onRestart: () => void;
@@ -14,7 +13,7 @@ interface GameOverScreenProps {
   isZoneTest: boolean;
 }
 
-export function GameOverScreen({ score, coins, height, onRestart, onSubmitScore, onShowLeaderboard, onMenu, user, isZoneTest }: GameOverScreenProps) {
+export function GameOverScreen({ coins, height, onRestart, onSubmitScore, onShowLeaderboard, onMenu, user, isZoneTest }: GameOverScreenProps) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
 
   useEffect(() => {
@@ -43,17 +42,13 @@ export function GameOverScreen({ score, coins, height, onRestart, onSubmitScore,
         </h2>
 
         <div className="flex gap-3">
-          <div className="px-5 py-3 text-center" style={{ background: 'rgba(15,23,42,0.8)', border: '2px solid rgba(241,245,249,0.2)', borderRadius: '4px' }}>
-            <div className="text-[#F1F5F9]/50 text-xs font-mono uppercase">Puntos</div>
-            <div className="text-[#FF5A36] text-2xl font-bold font-mono">{score}</div>
+          <div className="px-5 py-3 text-center" style={{ background: 'rgba(15,23,42,0.8)', border: '2px solid rgba(255,90,54,0.4)', borderRadius: '4px' }}>
+            <div className="text-[#F1F5F9]/50 text-xs font-mono uppercase">Distancia</div>
+            <div className="text-[#FF5A36] text-2xl font-bold font-mono">{height}m</div>
           </div>
           <div className="px-5 py-3 text-center" style={{ background: 'rgba(15,23,42,0.8)', border: '2px solid rgba(241,245,249,0.2)', borderRadius: '4px' }}>
             <div className="text-[#F1F5F9]/50 text-xs font-mono uppercase">Monedas</div>
             <div className="text-[#F1F5F9] text-2xl font-bold font-mono">{coins}</div>
-          </div>
-          <div className="px-5 py-3 text-center" style={{ background: 'rgba(15,23,42,0.8)', border: '2px solid rgba(241,245,249,0.2)', borderRadius: '4px' }}>
-            <div className="text-[#F1F5F9]/50 text-xs font-mono uppercase">Altura</div>
-            <div className="text-[#F1F5F9] text-2xl font-bold font-mono">{height}</div>
           </div>
         </div>
 

@@ -3,7 +3,7 @@ import {
   MOVE_ACCEL, MOVE_MAX, FRICTION, AIR_FRICTION,
   PLAYER_WIDTH, PLAYER_HEIGHT, PLATFORM_WIDTH, PLATFORM_HEIGHT,
   MOVING_PLATFORM_WIDTH, PLATFORM_SPACING_MIN, PLATFORM_SPACING_MAX,
-  COIN_VALUE, HEIGHT_SCORE_DIVISOR, GAME_WIDTH, GAME_HEIGHT, ROULETTE_COST,
+  HEIGHT_SCORE_DIVISOR, GAME_WIDTH, GAME_HEIGHT, ROULETTE_COST,
 } from './constants';
 import type { Platform, Player, Particle, PowerUpType, Enemy, Coin, PlatformType, GameSnapshot, GameState } from './types';
 import { soundManager } from './sound';
@@ -438,7 +438,7 @@ export class GameEngine {
     const heightFromStart = GAME_HEIGHT - 120 - p.y;
     if (heightFromStart > this.maxHeight) {
       this.maxHeight = heightFromStart;
-      this.score = Math.floor(this.maxHeight / HEIGHT_SCORE_DIVISOR) + this.coinCount * COIN_VALUE;
+      this.score = Math.floor(this.maxHeight / HEIGHT_SCORE_DIVISOR);
     }
 
     if (p.y > this.cameraY + GAME_HEIGHT + 50) {
@@ -574,7 +574,7 @@ export class GameEngine {
         if (this.coinCount >= ROULETTE_COST) {
           this.rouletteReady = true;
         }
-        this.score = Math.floor(this.maxHeight / HEIGHT_SCORE_DIVISOR) + this.coinCount * COIN_VALUE;
+        this.score = Math.floor(this.maxHeight / HEIGHT_SCORE_DIVISOR);
         soundManager.play('coin');
         this.spawnCoinParticles(c.x, c.y);
       }
@@ -605,7 +605,7 @@ export class GameEngine {
           if (this.coinCount >= ROULETTE_COST) {
             this.rouletteReady = true;
           }
-          this.score = Math.floor(this.maxHeight / HEIGHT_SCORE_DIVISOR) + this.coinCount * COIN_VALUE;
+          this.score = Math.floor(this.maxHeight / HEIGHT_SCORE_DIVISOR);
           this.spawnCoinParticles(e.x + e.width / 2, e.y);
         } else if (p.invulnerable <= 0 && p.jetpackFuel <= 0 && p.propellerFuel <= 0) {
           this.hitPlayer();

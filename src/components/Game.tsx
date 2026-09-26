@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { GameEngine } from '@/game/engine';
 import { Renderer } from '@/game/renderer';
 import { soundManager } from '@/game/sound';
-import type { GameSnapshot, ViewMode } from '@/game/types';
+import type { GameSnapshot } from '@/game/types';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { useAuth } from '@/hooks/useAuth';
 import { useCharacter } from '@/hooks/useCharacter';
@@ -10,7 +10,6 @@ import { MenuScreen } from '@/components/MenuScreen';
 import { GameOverScreen } from '@/components/GameOverScreen';
 import { HUD } from '@/components/HUD';
 import { MobileControls } from '@/components/MobileControls';
-import { ViewToggle } from '@/components/ViewToggle';
 import { FullscreenButton } from '@/components/FullscreenButton';
 import { PauseScreen } from '@/components/PauseScreen';
 import { RouletteScreen } from '@/components/RouletteScreen';
@@ -32,7 +31,6 @@ export function Game() {
     rouletteReady: false,
     isZoneTest: false,
   });
-  const [viewMode, setViewMode] = useState<ViewMode>('auto');
   const [isMobile, setIsMobile] = useState(false);
   const [muted, setMuted] = useState(false);
   const [showRoulette, setShowRoulette] = useState(false);
@@ -45,8 +43,7 @@ export function Game() {
   const { scores, customizations, loading: lbLoading, submitScore, refetch } = useLeaderboard();
   const { customization, loading: charLoading, needsSetup, saveCustomization, spidermanUnlocked, unlockSpiderman } = useCharacter(user?.id ?? null);
 
-  const effectiveView = viewMode === 'auto' ? (isMobile ? 'mobile' : 'desktop') : viewMode;
-  const showMobileControls = effectiveView === 'mobile';
+  const showMobileControls = isMobile;
 
   useEffect(() => {
     const check = () => {
@@ -277,6 +274,7 @@ export function Game() {
             score={snapshot.score}
             coins={snapshot.coins}
             height={snapshot.height}
+            lives={snapshot.lives}
             hasJetpack={snapshot.hasJetpack}
             hasPropeller={snapshot.hasPropeller}
             hasShield={snapshot.hasShield}
@@ -359,7 +357,6 @@ export function Game() {
 
         {snapshot.state === 'gameover' && (
           <GameOverScreen
-            score={snapshot.score}
             coins={snapshot.coins}
             height={snapshot.height}
             onRestart={handleRestart}
@@ -381,7 +378,6 @@ export function Game() {
         )}
 
         <FullscreenButton />
-        <ViewToggle mode={viewMode} onChange={setViewMode} isMobile={isMobile} />
       </div>
     </div>
   );

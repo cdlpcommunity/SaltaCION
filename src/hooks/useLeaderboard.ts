@@ -65,7 +65,7 @@ export function useLeaderboard() {
       created_at: row.updated_at,
     }));
     const historicalScores = historyData as ScoreEntry[];
-    const mapped = [...bestScores, ...historicalScores].sort((a, b) => b.score - a.score);
+    const mapped = [...bestScores, ...historicalScores].sort((a, b) => b.height - a.height || b.score - a.score);
     setScores(mapped);
 
     const userIds = mapped
@@ -97,13 +97,13 @@ export function useLeaderboard() {
 
     const { data: existing, error: selError } = await supabase
       .from('best_scores')
-      .select('score')
+      .select('score, height')
       .eq('user_id', userId)
       .maybeSingle();
 
     if (selError) throw new Error(selError.message);
 
-    if (existing && (existing as { score: number }).score >= score) {
+    if (existing && (existing as { height: number }).height >= height) {
       await fetchScores();
       return true;
     }

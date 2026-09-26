@@ -74,11 +74,11 @@ export function Leaderboard({ scores, customizations, loading, onClose }: Leader
                 <div className="flex-1 min-w-0">
                   <div className="text-[#F1F5F9] font-mono text-sm font-bold truncate">{entry.player_name}</div>
                   <div className="text-[#F1F5F9]/40 font-mono text-xs">
-                    {entry.coins} monedas · {entry.height}m
+                    {entry.coins} monedas
                   </div>
                 </div>
                 <div className="font-mono font-bold text-lg" style={{ color: i === 0 ? '#FF5A36' : '#F1F5F9' }}>
-                  {entry.score}
+                  {entry.height}m
                 </div>
               </div>
             );

@@ -5,6 +5,7 @@ interface HUDProps {
   score: number;
   coins: number;
   height: number;
+  lives: number;
   hasJetpack: boolean;
   hasPropeller: boolean;
   hasShield: boolean;
@@ -330,7 +331,10 @@ const ZONE_SIGN_STYLES: Record<ZoneId, ZoneSignStyle> = {
   },
 };
 
-export function HUD({ score, coins, height, hasJetpack, hasPropeller, hasShield, jetpackFuel, propellerFuel, muted, onMute, onPause, onRoulette, rouletteReady, zoneName, zoneSubtitle, zone }: HUDProps) {
+const JETPACK_MAX_FUEL = 3;
+const PROPELLER_MAX_FUEL = 4;
+
+export function HUD({ score, coins, height, lives, hasJetpack, hasPropeller, hasShield, jetpackFuel, propellerFuel, muted, onMute, onPause, onRoulette, rouletteReady, zoneName, zoneSubtitle, zone }: HUDProps) {
   const s = ZONE_SIGN_STYLES[zone] ?? ZONE_SIGN_STYLES.innerCore;
 
   return (
@@ -338,16 +342,19 @@ export function HUD({ score, coins, height, hasJetpack, hasPropeller, hasShield,
       <div className="flex items-start justify-between p-3">
         <div className="flex flex-col gap-1">
           <div className="px-3 py-1.5" style={{ background: 'rgba(15,23,42,0.8)', border: '2px solid rgba(241,245,249,0.15)', borderRadius: '4px' }}>
-            <span className="text-[#F1F5F9] font-mono text-lg font-bold">{score}</span>
+            <span className="text-[#F1F5F9] font-mono text-lg font-bold">{height}m</span>
           </div>
           <div className="flex gap-1.5">
             <div className="px-2 py-1 flex items-center gap-1" style={{ background: 'rgba(15,23,42,0.8)', border: '1px solid rgba(255,90,54,0.3)', borderRadius: '3px' }}>
               <span className="text-[#FF5A36] text-xs">●</span>
               <span className="text-[#F1F5F9] font-mono text-xs font-bold">{coins}</span>
             </div>
-            <div className="px-2 py-1" style={{ background: 'rgba(15,23,42,0.8)', border: '1px solid rgba(241,245,249,0.2)', borderRadius: '3px' }}>
-              <span className="text-[#F1F5F9] font-mono text-xs font-bold">{height}m</span>
-            </div>
+            {lives > 1 && (
+              <div className="px-2 py-1 flex items-center gap-1" style={{ background: 'rgba(15,23,42,0.8)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '3px' }}>
+                <span className="text-[#ef4444] text-xs">❤</span>
+                <span className="text-[#F1F5F9] font-mono text-xs font-bold">{lives}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -467,16 +474,16 @@ export function HUD({ score, coins, height, hasJetpack, hasPropeller, hasShield,
         {hasJetpack && (
           <div className="w-32 h-2 overflow-hidden" style={{ background: 'rgba(15,23,42,0.8)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: '2px' }}>
             <div
-              className="h-full transition-all"
-              style={{ background: 'linear-gradient(90deg, #6366f1, #818cf8)', width: `${(jetpackFuel / 3) * 100}%` }}
+              className="h-full"
+              style={{ background: 'linear-gradient(90deg, #6366f1, #818cf8)', width: `${(jetpackFuel / JETPACK_MAX_FUEL) * 100}%` }}
             />
           </div>
         )}
         {hasPropeller && (
           <div className="w-32 h-2 overflow-hidden" style={{ background: 'rgba(15,23,42,0.8)', border: '1px solid rgba(20,184,166,0.4)', borderRadius: '2px' }}>
             <div
-              className="h-full transition-all"
-              style={{ background: 'linear-gradient(90deg, #14b8a6, #5eead4)', width: `${(propellerFuel / 4) * 100}%` }}
+              className="h-full"
+              style={{ background: 'linear-gradient(90deg, #14b8a6, #5eead4)', width: `${(propellerFuel / PROPELLER_MAX_FUEL) * 100}%` }}
             />
           </div>
         )}
