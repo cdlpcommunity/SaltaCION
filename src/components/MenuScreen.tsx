@@ -96,7 +96,7 @@ export function MenuScreen({ onStart, onShowLeaderboard, onShowCustomization, hi
         {highScore > 0 && (
           <div className="px-6 py-2" style={{ background: 'rgba(15,23,42,0.8)', borderRadius: '2px', border: '2px solid rgba(255,90,54,0.4)' }}>
             <span className="text-[#F1F5F9]/80 text-sm font-mono">
-              Récord: <span className="text-[#FF5A36] font-bold">{highScore}</span>
+              Récord: <span className="text-[#FF5A36] font-bold">{highScore}m</span>
             </span>
           </div>
         )}

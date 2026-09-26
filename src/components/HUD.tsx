@@ -2,7 +2,6 @@ import { Pause, Volume2, VolumeX } from 'lucide-react';
 import type { ZoneId } from '@/game/zones';
 
 interface HUDProps {
-  score: number;
   coins: number;
   height: number;
   lives: number;
@@ -334,7 +333,7 @@ const ZONE_SIGN_STYLES: Record<ZoneId, ZoneSignStyle> = {
 const JETPACK_MAX_FUEL = 3;
 const PROPELLER_MAX_FUEL = 4;
 
-export function HUD({ score, coins, height, lives, hasJetpack, hasPropeller, hasShield, jetpackFuel, propellerFuel, muted, onMute, onPause, onRoulette, rouletteReady, zoneName, zoneSubtitle, zone }: HUDProps) {
+export function HUD({ coins, height, lives, hasJetpack, hasPropeller, hasShield, jetpackFuel, propellerFuel, muted, onMute, onPause, onRoulette, rouletteReady, zoneName, zoneSubtitle, zone }: HUDProps) {
   const s = ZONE_SIGN_STYLES[zone] ?? ZONE_SIGN_STYLES.innerCore;
 
   return (

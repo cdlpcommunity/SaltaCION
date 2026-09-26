@@ -271,7 +271,6 @@ export function Game() {
 
         {snapshot.state === 'playing' && (
           <HUD
-            score={snapshot.score}
             coins={snapshot.coins}
             height={snapshot.height}
             lives={snapshot.lives}
@@ -309,7 +308,7 @@ export function Game() {
             onStart={handleStart}
             onShowLeaderboard={() => { refetch(); setShowLeaderboard(true); }}
             onShowCustomization={() => setShowCustomization(true)}
-            highScore={scores[0]?.score ?? 0}
+            highScore={scores[0]?.height ?? 0}
             user={user}
             customization={customization}
             onSignOut={signOut}
