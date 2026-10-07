@@ -38,6 +38,9 @@ export function Game() {
   const [showCustomization, setShowCustomization] = useState(false);
   const [showZoneTest, setShowZoneTest] = useState(false);
   const [authReady, setAuthReady] = useState(false);
+  const isMobileRef = useRef(false);
+  const snapshotRef = useRef(snapshot);
+  snapshotRef.current = snapshot;
   const [justSignedUp, setJustSignedUp] = useState(false);
   const { user, loading: authLoading, signUp, signIn, signOut } = useAuth();
   const { scores, customizations, loading: lbLoading, submitScore, refetch } = useLeaderboard();
@@ -48,6 +51,7 @@ export function Game() {
   useEffect(() => {
     const check = () => {
       const mobile = window.innerWidth < 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      isMobileRef.current = mobile;
       setIsMobile(mobile);
     };
     check();
@@ -115,10 +119,38 @@ export function Game() {
         else if (engine.state === 'paused') engine.resumeGame();
         e.preventDefault();
       }
+      if (down && !isMobileRef.current && (e.key === 'q' || e.key === 'Q')) {
+        if (engine.state === 'playing') engine.pauseGame();
+        else if (engine.state === 'paused') engine.resumeGame();
+        e.preventDefault();
+      }
+      if (down && !isMobileRef.current && (e.key === 'e' || e.key === 'E')) {
+        if (engine.state === 'playing' && snapshotRef.current.rouletteReady) {
+          handleRouletteFromKeyboard();
+          e.preventDefault();
+        }
+      }
+      if (down && !isMobileRef.current && (e.key === 'f' || e.key === 'F')) {
+        toggleMuteFromKeyboard();
+        e.preventDefault();
+      }
       if (down && (e.key === 'p' || e.key === 'P' || e.key === 'Escape')) {
         if (engine.state === 'playing') engine.pauseGame();
         else if (engine.state === 'paused') engine.resumeGame();
       }
+    };
+    const handleRouletteFromKeyboard = () => {
+      const currentEngine = engineRef.current;
+      if (!currentEngine || currentEngine.state !== 'playing' || !snapshotRef.current.rouletteReady) return;
+      currentEngine.pauseForRoulette();
+      setShowRoulette(true);
+    };
+    const toggleMuteFromKeyboard = () => {
+      setMuted((currentMuted) => {
+        const nextMuted = !currentMuted;
+        soundManager.setMuted(nextMuted);
+        return nextMuted;
+      });
     };
     const kd = (e: KeyboardEvent) => handleKey(e, true);
     const ku = (e: KeyboardEvent) => handleKey(e, false);
@@ -251,6 +283,21 @@ export function Game() {
       className="relative w-full h-[100dvh] overflow-hidden flex items-center justify-center select-none touch-none"
       style={{ background: '#0F172A' }}
     >
+      {!isMobile && (
+        <aside
+          className="absolute left-4 top-4 bottom-4 hidden w-[min(360px,calc(50vw-280px))] min-w-[220px] md:block"
+          aria-label="Ranking permanente"
+        >
+          <Leaderboard
+            scores={scores}
+            customizations={customizations}
+            loading={lbLoading}
+            onClose={() => setShowLeaderboard(false)}
+            persistent
+          />
+        </aside>
+      )}
+
       <div
         className="relative shadow-2xl"
         style={isMobile ? {
@@ -307,6 +354,7 @@ export function Game() {
           <MenuScreen
             onStart={handleStart}
             onShowLeaderboard={() => { refetch(); setShowLeaderboard(true); }}
+            showLeaderboardButton={isMobile}
             onShowCustomization={() => setShowCustomization(true)}
             highScore={scores[0]?.height ?? 0}
             user={user}
@@ -367,7 +415,7 @@ export function Game() {
           />
         )}
 
-        {showLeaderboard && (
+        {showLeaderboard && isMobile && (
           <Leaderboard
             scores={scores}
             customizations={customizations}

@@ -11,6 +11,7 @@ import {
 interface MenuScreenProps {
   onStart: () => void;
   onShowLeaderboard: () => void;
+  showLeaderboardButton: boolean;
   onShowCustomization: () => void;
   highScore: number;
   user: AuthUser | null;
@@ -19,7 +20,7 @@ interface MenuScreenProps {
   onSecretUnlock: () => void;
 }
 
-export function MenuScreen({ onStart, onShowLeaderboard, onShowCustomization, highScore, user, customization, onSignOut, onSecretUnlock }: MenuScreenProps) {
+export function MenuScreen({ onStart, onShowLeaderboard, showLeaderboardButton, onShowCustomization, highScore, user, customization, onSignOut, onSecretUnlock }: MenuScreenProps) {
   const [muted, setMuted] = useState(soundManager.isMuted());
   const titleTapCount = useRef(0);
   const titleTapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -127,14 +128,16 @@ export function MenuScreen({ onStart, onShowLeaderboard, onShowCustomization, hi
               Personalizar
             </button>
           )}
-          <button
-            onClick={onShowLeaderboard}
-            className="flex items-center justify-center gap-2 px-6 py-2.5 font-semibold transition-all hover:brightness-125 active:brightness-90"
-            style={pixelSecondaryButton}
-          >
-            <PixelTrophy size={16} />
-            Ranking
-          </button>
+          {showLeaderboardButton && (
+            <button
+              onClick={onShowLeaderboard}
+              className="flex items-center justify-center gap-2 px-6 py-2.5 font-semibold transition-all hover:brightness-125 active:brightness-90"
+              style={pixelSecondaryButton}
+            >
+              <PixelTrophy size={16} />
+              Ranking
+            </button>
+          )}
           {user && (
             <button
               onClick={onSignOut}

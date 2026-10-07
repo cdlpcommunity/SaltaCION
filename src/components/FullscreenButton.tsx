@@ -24,7 +24,7 @@ export function FullscreenButton() {
     <PixelButton
       onClick={toggle}
       title={isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
-      style={{ position: 'absolute', top: 8, left: '50%', transform: 'translateX(-50%)', zIndex: 30, width: 32, height: 32 }}
+      style={{ position: 'absolute', top: 12, right: 12, zIndex: 30, width: 32, height: 32 }}
     >
       <PixelFullscreen size={14} exit={isFullscreen} />
     </PixelButton>

@@ -11,22 +11,26 @@ interface LeaderboardProps {
   customizations: Record<string, CharacterCustomization>;
   loading: boolean;
   onClose: () => void;
+  persistent?: boolean;
 }
 
-export function Leaderboard({ scores, customizations, loading, onClose }: LeaderboardProps) {
+export function Leaderboard({ scores, customizations, loading, onClose, persistent = false }: LeaderboardProps) {
   const medalColors = ['#fbbf24', '#e2e8f0', '#cd7f32'];
   const standardTextColor = '#F1F5F9';
 
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center z-30 px-6"
-      style={{ background: 'rgba(15,23,42,0.95)' }}
+    <div
+      className={persistent
+        ? 'relative w-full h-full flex flex-col items-center justify-center px-2'
+        : 'absolute inset-0 flex flex-col items-center justify-center z-30 px-6'}
+      style={persistent ? undefined : { background: 'rgba(15,23,42,0.95)' }}
     >
-      <div className="absolute inset-0 opacity-10" style={{
+      {!persistent && <div className="absolute inset-0 opacity-10" style={{
         backgroundImage: 'linear-gradient(rgba(241,245,249,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(241,245,249,0.15) 1px, transparent 1px)',
         backgroundSize: '16px 16px',
-      }} />
+      }} />}
 
-      <div className="relative w-full max-w-sm flex flex-col items-center gap-4 animate-[fadeIn_0.3s_ease-out] z-10">
+      <div className={`relative w-full ${persistent ? 'max-w-none' : 'max-w-sm'} flex flex-col items-center gap-4 animate-[fadeIn_0.3s_ease-out] z-10`}>
         {/* Title row */}
         <div className="flex items-center justify-between w-full">
           <h2 className="text-2xl font-black font-mono flex items-center gap-2"
@@ -35,17 +39,17 @@ export function Leaderboard({ scores, customizations, loading, onClose }: Leader
             <PixelTrophy size={22} color="#fbbf24" />
             Ranking
           </h2>
-          <button
+          {!persistent && <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center transition-all hover:brightness-125"
             style={{ ...pixelSecondaryButton, width: 32, height: 32 }}
           >
             <PixelClose size={14} />
-          </button>
+          </button>}
         </div>
 
         {/* Scores list */}
-        <div className="w-full flex flex-col gap-1.5 max-h-[400px] overflow-y-auto px-1" style={{ scrollbarWidth: 'none' }}>
+        <div className="w-full flex flex-col gap-1.5 max-h-[calc(100vh-88px)] overflow-y-auto px-1" style={{ scrollbarWidth: 'none' }}>
           {loading && (
             <div className="text-[#F1F5F9]/50 text-center py-8 font-mono text-sm">Cargando...</div>
           )}

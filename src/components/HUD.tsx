@@ -394,7 +394,7 @@ export function HUD({ coins, height, lives, hasJetpack, hasPropeller, hasShield,
           </div>
         </div>
 
-        <div className="flex flex-col items-end gap-2 pointer-events-auto">
+        <div className="flex flex-col items-end gap-2 mr-10 pointer-events-auto">
           {/* ====== PIXELART BUTTON ROW ====== */}
           <div className="flex gap-1.5">
             <PixelButton
