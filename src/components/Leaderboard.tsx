@@ -14,7 +14,8 @@ interface LeaderboardProps {
 }
 
 export function Leaderboard({ scores, customizations, loading, onClose }: LeaderboardProps) {
-  const medalColors = ['#FF5A36', '#F1F5F9', '#fbbf24'];
+  const medalColors = ['#fbbf24', '#e2e8f0', '#cd7f32'];
+  const standardTextColor = '#F1F5F9';
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center z-30 px-6"
@@ -29,9 +30,9 @@ export function Leaderboard({ scores, customizations, loading, onClose }: Leader
         {/* Title row */}
         <div className="flex items-center justify-between w-full">
           <h2 className="text-2xl font-black font-mono flex items-center gap-2"
-            style={{ color: '#FF5A36', textShadow: '3px 3px 0 #0F172A' }}
+            style={{ color: '#fbbf24', textShadow: '3px 3px 0 #0F172A' }}
           >
-            <PixelTrophy size={22} />
+            <PixelTrophy size={22} color="#fbbf24" />
             Ranking
           </h2>
           <button
@@ -76,8 +77,8 @@ export function Leaderboard({ scores, customizations, loading, onClose }: Leader
               >
                 {/* Rank number */}
                 <div className="w-7 text-center font-mono font-black text-lg" style={{
-                  color: medalColors[i],
-                  textShadow: isTop3 ? `1px 1px 0 #050a14` : 'none',
+                  color: isTop3 ? medalColors[i] : standardTextColor,
+                  textShadow: '1px 1px 0 #050a14',
                 }}>
                   {i + 1}
                 </div>
@@ -102,8 +103,8 @@ export function Leaderboard({ scores, customizations, loading, onClose }: Leader
                 </div>
                 {/* Height */}
                 <div className="flex items-center gap-1">
-                  <PixelArrowUp size={10} color={medalColors[i]} />
-                  <span className="font-mono font-black text-base" style={{ color: medalColors[i], textShadow: '1px 1px 0 #050a14' }}>
+                  <PixelArrowUp size={10} color={isTop3 ? medalColors[i] : '#FF5A36'} />
+                  <span className="font-mono font-black text-base" style={{ color: isTop3 ? medalColors[i] : standardTextColor, textShadow: '1px 1px 0 #050a14' }}>
                     {entry.height}m
                   </span>
                 </div>
