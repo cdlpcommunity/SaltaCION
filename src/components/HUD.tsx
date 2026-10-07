@@ -1,5 +1,5 @@
-import { Pause, Volume2, VolumeX } from 'lucide-react';
 import type { ZoneId } from '@/game/zones';
+import { PixelCoin, PixelHeart, PixelArrowUp, PixelPause, PixelSpeaker, PixelButton } from '@/components/pixelUI';
 
 interface HUDProps {
   coins: number;
@@ -339,40 +339,78 @@ export function HUD({ coins, height, lives, hasJetpack, hasPropeller, hasShield,
   return (
     <div className="absolute top-0 left-0 right-0 z-10 pointer-events-none">
       <div className="flex items-start justify-between p-3">
-        <div className="flex flex-col gap-1">
-          <div className="px-3 py-1.5" style={{ background: 'rgba(15,23,42,0.8)', border: '2px solid rgba(241,245,249,0.15)', borderRadius: '4px' }}>
-            <span className="text-[#F1F5F9] font-mono text-lg font-bold">{height}m</span>
+        <div className="flex flex-col gap-1.5">
+          {/* ====== DISTANCE COUNTER ====== */}
+          <div
+            className="flex items-center gap-1.5 px-2.5 py-1"
+            style={{
+              background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)',
+              border: '2px solid #050a14',
+              borderRadius: '3px',
+              boxShadow: '0 3px 0 #050a14, inset 0 2px 0 rgba(148,163,184,0.12), inset 0 -2px 0 rgba(0,0,0,0.35)',
+              imageRendering: 'pixelated',
+            }}
+          >
+            <PixelArrowUp size={12} color="#FF5A36" />
+            <span className="text-[#F1F5F9] font-mono text-lg font-bold leading-none" style={{ textShadow: '1px 1px 0 #050a14' }}>
+              {height}m
+            </span>
           </div>
+
+          {/* ====== COIN + EXTRA LIVES ROW ====== */}
           <div className="flex gap-1.5">
-            <div className="px-2 py-1 flex items-center gap-1" style={{ background: 'rgba(15,23,42,0.8)', border: '1px solid rgba(255,90,54,0.3)', borderRadius: '3px' }}>
-              <span className="text-[#FF5A36] text-xs">●</span>
-              <span className="text-[#F1F5F9] font-mono text-xs font-bold">{coins}</span>
+            <div
+              className="flex items-center gap-1 px-2 py-1"
+              style={{
+                background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)',
+                border: '2px solid #050a14',
+                borderRadius: '3px',
+                boxShadow: '0 2px 0 #050a14, inset 0 1px 0 rgba(148,163,184,0.1), inset 0 -1px 0 rgba(0,0,0,0.3)',
+                imageRendering: 'pixelated',
+              }}
+            >
+              <PixelCoin size={10} />
+              <span className="text-[#fcd34d] font-mono text-xs font-bold leading-none" style={{ textShadow: '1px 1px 0 #050a14' }}>
+                {coins}
+              </span>
             </div>
             {lives > 1 && (
-              <div className="px-2 py-1 flex items-center gap-1" style={{ background: 'rgba(15,23,42,0.8)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: '3px' }}>
-                <span className="text-[#ef4444] text-xs">❤</span>
-                <span className="text-[#F1F5F9] font-mono text-xs font-bold">+{lives - 1}</span>
+              <div
+                className="flex items-center gap-1 px-2 py-1"
+                style={{
+                  background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)',
+                  border: '2px solid #050a14',
+                  borderRadius: '3px',
+                  boxShadow: '0 2px 0 #050a14, inset 0 1px 0 rgba(148,163,184,0.1), inset 0 -1px 0 rgba(0,0,0,0.3)',
+                  imageRendering: 'pixelated',
+                }}
+              >
+                <PixelHeart size={10} />
+                <span className="text-[#fca5a5] font-mono text-xs font-bold leading-none" style={{ textShadow: '1px 1px 0 #050a14' }}>
+                  +{lives - 1}
+                </span>
               </div>
             )}
           </div>
         </div>
 
         <div className="flex flex-col items-end gap-2 pointer-events-auto">
+          {/* ====== PIXELART BUTTON ROW ====== */}
           <div className="flex gap-1.5">
-            <button
+            <PixelButton
               onClick={onMute}
-              className="w-8 h-8 flex items-center justify-center text-[#F1F5F9] transition-colors hover:bg-[#FF5A36]/20"
-              style={{ background: 'rgba(15,23,42,0.8)', border: '2px solid rgba(241,245,249,0.15)', borderRadius: '4px' }}
+              title={muted ? 'Activar sonido' : 'Silenciar'}
+              style={{ width: 32, height: 32 }}
             >
-              {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-            </button>
-            <button
+              <PixelSpeaker size={14} muted={muted} />
+            </PixelButton>
+            <PixelButton
               onClick={onPause}
-              className="w-8 h-8 flex items-center justify-center text-[#F1F5F9] transition-colors hover:bg-[#FF5A36]/20"
-              style={{ background: 'rgba(15,23,42,0.8)', border: '2px solid rgba(241,245,249,0.15)', borderRadius: '4px' }}
+              title="Pausa"
+              style={{ width: 32, height: 32 }}
             >
-              <Pause size={16} />
-            </button>
+              <PixelPause size={14} />
+            </PixelButton>
           </div>
 
           {/* ====== ZONE SIGN ====== */}
