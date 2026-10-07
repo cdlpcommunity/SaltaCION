@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, Shuffle, Save, ArrowLeft, Loader2, Lock, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { CharacterAvatar } from '@/components/CharacterAvatar';
 import {
   EYE_STYLES,
@@ -19,6 +19,10 @@ import {
   type Outfit,
   type Accessory,
 } from '@/game/characterTypes';
+import {
+  PixelCheck, PixelShuffle, PixelSave, PixelBack, PixelLock,
+  pixelPrimaryButton, pixelSecondaryButton, pixelPanelStyle,
+} from '@/components/pixelUI';
 
 interface CharacterCustomizationScreenProps {
   initial: CharacterCustomization;
@@ -74,9 +78,7 @@ export function CharacterCustomizationScreen({
     setError(null);
     const ok = await onSave(char);
     setSaving(false);
-    if (!ok) {
-      setError('No se pudo guardar. Intenta de nuevo.');
-    }
+    if (!ok) setError('No se pudo guardar. Intenta de nuevo.');
   };
 
   const handleRandom = () => {
@@ -99,16 +101,12 @@ export function CharacterCustomizationScreen({
       setPasswordError('Contraseña incorrecta.');
       return;
     }
-
     setShowUnlockModal(false);
     setPasswordInput('');
     setPasswordError(null);
     setCategory('outfit');
     update({ outfit: 'spiderman' });
-
-    if (onUnlockSpiderman) {
-      await onUnlockSpiderman();
-    }
+    if (onUnlockSpiderman) await onUnlockSpiderman();
   };
 
   const categories: Category[] = ['body', 'eyes', 'mouth', 'hair', 'outfit', 'accessory'];
@@ -126,83 +124,54 @@ export function CharacterCustomizationScreen({
       <div className="absolute bottom-20 right-8 w-4 h-4 animate-[pulse-glow_5s_ease-in-out_infinite]" style={{ background: 'rgba(255,90,54,0.2)' }} />
 
       <div className="relative z-10 w-full max-w-sm flex flex-col items-center gap-3 animate-[fadeIn_0.4s_ease-out] px-1">
-        <h2 className="text-2xl font-black font-mono flex items-center gap-2" style={{ color: '#FF5A36', textShadow: '3px 3px 0 #0F172A' }}>
+        {/* Title */}
+        <h2 className="text-2xl font-black font-mono flex items-center gap-2" style={{ color: '#FF5A36', textShadow: '3px 3px 0 #050a14' }}>
           {title}
         </h2>
 
-        {/* Preview */}
-        <div className="relative" style={{
-          background: 'rgba(15,23,42,0.8)',
-          borderRadius: '8px',
-          border: '2px solid rgba(255,90,54,0.3)',
-          padding: '12px',
+        {/* Preview plate */}
+        <div className="relative flex items-center justify-center p-3" style={{
+          ...pixelPanelStyle,
+          boxShadow: '0 5px 0 #050a14, inset 0 3px 0 rgba(255,90,54,0.1), inset 0 -3px 0 rgba(0,0,0,0.35)',
+          borderRadius: '6px',
         }}>
-          <div className="flex items-center justify-center" style={{ minHeight: '100px' }}>
+          <div style={{ minHeight: '100px' }}>
             <CharacterAvatar customization={char} size={100} animated />
           </div>
         </div>
 
-        {/* Category Tabs */}
+        {/* Category tabs */}
         <div className="flex gap-1.5 flex-wrap justify-center">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setCategory(cat)}
-              className="px-3 py-1.5 font-mono text-xs font-bold transition-all"
-              style={{
-                background: category === cat ? '#FF5A36' : 'rgba(15,23,42,0.8)',
-                color: category === cat ? '#FFFFFF' : '#F1F5F9',
-                border: `2px solid ${category === cat ? '#0F172A' : 'rgba(241,245,249,0.2)'}`,
-                borderRadius: '4px',
-              }}
+              className="px-3 py-1.5 font-mono text-xs font-bold transition-all hover:brightness-125"
+              style={category === cat ? pixelPrimaryButton : { ...pixelSecondaryButton, boxShadow: '0 2px 0 #050a14' }}
             >
               {CATEGORY_LABELS[cat]}
             </button>
           ))}
         </div>
 
-        {/* Options Panel */}
-        <div className="w-full" style={{
-          background: 'rgba(15,23,42,0.6)',
-          borderRadius: '6px',
-          border: '2px solid rgba(241,245,249,0.1)',
-          padding: '10px',
+        {/* Options panel */}
+        <div className="w-full p-2.5" style={{
+          ...pixelPanelStyle,
+          boxShadow: '0 4px 0 #050a14, inset 0 2px 0 rgba(148,163,184,0.06), inset 0 -2px 0 rgba(0,0,0,0.3)',
+          borderRadius: '4px',
           minHeight: '80px',
         }}>
           {category === 'body' && (
-            <ColorPicker
-              label="Color de cuerpo"
-              colors={BODY_COLORS}
-              selected={char.bodyColor}
-              onSelect={(c) => update({ bodyColor: c })}
-            />
+            <ColorPicker label="Color de cuerpo" colors={BODY_COLORS} selected={char.bodyColor} onSelect={(c) => update({ bodyColor: c })} />
           )}
           {category === 'eyes' && (
-            <OptionGrid
-              options={ALL_EYE_STYLES}
-              selected={char.eyeStyle}
-              onSelect={(id) => update({ eyeStyle: id as EyeStyle })}
-              char={char}
-              previewType="eyes"
-            />
+            <OptionGrid options={ALL_EYE_STYLES} selected={char.eyeStyle} onSelect={(id) => update({ eyeStyle: id as EyeStyle })} char={char} previewType="eyes" />
           )}
           {category === 'mouth' && (
-            <OptionGrid
-              options={ALL_MOUTH_STYLES}
-              selected={char.mouthStyle}
-              onSelect={(id) => update({ mouthStyle: id as MouthStyle })}
-              char={char}
-              previewType="mouth"
-            />
+            <OptionGrid options={ALL_MOUTH_STYLES} selected={char.mouthStyle} onSelect={(id) => update({ mouthStyle: id as MouthStyle })} char={char} previewType="mouth" />
           )}
           {category === 'hair' && (
-            <OptionGrid
-              options={ALL_HAIR_STYLES}
-              selected={char.hairStyle}
-              onSelect={(id) => update({ hairStyle: id as HairStyle })}
-              char={char}
-              previewType="hair"
-            />
+            <OptionGrid options={ALL_HAIR_STYLES} selected={char.hairStyle} onSelect={(id) => update({ hairStyle: id as HairStyle })} char={char} previewType="hair" />
           )}
           {category === 'outfit' && (
             <>
@@ -210,10 +179,7 @@ export function CharacterCustomizationScreen({
                 options={ALL_OUTFITS}
                 selected={char.outfit}
                 onSelect={(id) => {
-                  if (id === 'spiderman' && !spidermanUnlocked) {
-                    setShowUnlockModal(true);
-                    return;
-                  }
+                  if (id === 'spiderman' && !spidermanUnlocked) { setShowUnlockModal(true); return; }
                   update({ outfit: id as Outfit });
                 }}
                 char={char}
@@ -221,31 +187,15 @@ export function CharacterCustomizationScreen({
                 lockedItems={spidermanUnlocked ? [] : ['spiderman']}
               />
               {char.outfit !== 'none' && char.outfit !== 'spiderman' && (
-                <ColorPicker
-                  label="Color de ropa"
-                  colors={OUTFIT_COLORS}
-                  selected={char.outfitColor}
-                  onSelect={(c) => update({ outfitColor: c })}
-                />
+                <ColorPicker label="Color de ropa" colors={OUTFIT_COLORS} selected={char.outfitColor} onSelect={(c) => update({ outfitColor: c })} />
               )}
             </>
           )}
           {category === 'accessory' && (
             <>
-              <OptionGrid
-                options={ALL_ACCESSORIES}
-                selected={char.accessory}
-                onSelect={(id) => update({ accessory: id as Accessory })}
-                char={char}
-                previewType="accessory"
-              />
+              <OptionGrid options={ALL_ACCESSORIES} selected={char.accessory} onSelect={(id) => update({ accessory: id as Accessory })} char={char} previewType="accessory" />
               {char.accessory !== 'none' && (
-                <ColorPicker
-                  label="Color de accesorio"
-                  colors={ACCESSORY_COLORS}
-                  selected={char.accessoryColor}
-                  onSelect={(c) => update({ accessoryColor: c })}
-                />
+                <ColorPicker label="Color de accesorio" colors={ACCESSORY_COLORS} selected={char.accessoryColor} onSelect={(c) => update({ accessoryColor: c })} />
               )}
             </>
           )}
@@ -257,63 +207,39 @@ export function CharacterCustomizationScreen({
           </div>
         )}
 
-        {/* Action Buttons */}
+        {/* Action buttons */}
         <div className="flex gap-2 w-full">
           {!isFirstTime && (
-            <button
-              onClick={onCancel}
-              className="flex items-center justify-center gap-1 px-4 py-2.5 font-mono font-bold text-sm transition-colors"
-              style={{
-                background: 'rgba(15,23,42,0.8)',
-                color: '#F1F5F9',
-                border: '2px solid rgba(241,245,249,0.2)',
-                borderRadius: '4px',
-              }}
-            >
-              <ArrowLeft size={16} />
+            <button onClick={onCancel} className="flex items-center justify-center gap-1 px-4 py-2.5 transition-all hover:brightness-125" style={{ ...pixelSecondaryButton, width: 44 }}>
+              <PixelBack size={16} />
             </button>
           )}
-          <button
-            onClick={handleRandom}
-            className="flex items-center justify-center gap-1 px-4 py-2.5 font-mono font-bold text-sm transition-transform hover:scale-105 active:scale-95"
-            style={{
-              background: 'rgba(15,23,42,0.8)',
-              color: '#F1F5F9',
-              border: '2px solid rgba(241,245,249,0.2)',
-              borderRadius: '4px',
-            }}
-          >
-            <Shuffle size={16} />
+          <button onClick={handleRandom} className="flex items-center justify-center gap-1 px-4 py-2.5 transition-all hover:brightness-125" style={{ ...pixelSecondaryButton, width: 44 }}>
+            <PixelShuffle size={16} />
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 font-mono font-bold text-sm transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
-            style={{
-              background: '#FF5A36',
-              color: '#FFFFFF',
-              border: '2px solid #0F172A',
-              borderRadius: '4px',
-              boxShadow: '0 4px 0 #0F172A',
-            }}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 font-mono font-bold text-sm transition-all hover:brightness-110 active:brightness-90 disabled:opacity-50"
+            style={pixelPrimaryButton}
           >
-            {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+            {saving ? <Loader2 size={16} className="animate-spin" /> : <PixelSave size={16} />}
             {saving ? 'Guardando...' : 'Guardar'}
           </button>
         </div>
       </div>
 
-      {/* Spiderman Unlock Modal */}
+      {/* Spiderman unlock modal */}
       {showUnlockModal && (
         <div className="absolute inset-0 z-40 flex items-center justify-center" style={{ background: 'rgba(15,23,42,0.9)' }}>
           <div className="w-full max-w-xs flex flex-col gap-4 p-6" style={{
-            background: 'linear-gradient(180deg, #1e293b 0%, #0F172A 100%)',
-            borderRadius: '10px',
-            border: '2px solid rgba(220,38,38,0.4)',
+            ...pixelPanelStyle,
+            boxShadow: '0 6px 0 #050a14, inset 0 3px 0 rgba(220,38,38,0.15)',
+            borderRadius: '6px',
           }}>
             <div className="flex flex-col items-center gap-2">
-              <Lock size={32} color="#dc2626" />
-              <h3 className="text-xl font-black font-mono" style={{ color: '#dc2626', textShadow: '2px 2px 0 #0F172A' }}>
+              <PixelLock size={32} color="#dc2626" />
+              <h3 className="text-xl font-black font-mono" style={{ color: '#dc2626', textShadow: '2px 2px 0 #050a14' }}>
                 Traje Bloqueado
               </h3>
               <p className="text-sm font-mono text-center" style={{ color: '#F1F5F9' }}>
@@ -324,20 +250,11 @@ export function CharacterCustomizationScreen({
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={passwordInput}
-                onChange={(e) => {
-                  setPasswordInput(e.target.value);
-                  setPasswordError(null);
-                }}
+                onChange={(e) => { setPasswordInput(e.target.value); setPasswordError(null); }}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleUnlockSubmit(); }}
                 placeholder="Contraseña secreta"
                 className="w-full px-3 py-2.5 pr-10 font-mono text-sm text-center"
-                style={{
-                  background: 'rgba(15,23,42,0.8)',
-                  color: '#F1F5F9',
-                  border: '2px solid rgba(241,245,249,0.2)',
-                  borderRadius: '4px',
-                  outline: 'none',
-                }}
+                style={{ background: 'rgba(15,23,42,0.8)', color: '#F1F5F9', border: '2px solid #050a14', borderRadius: '4px', outline: 'none' }}
                 autoFocus
               />
               <button
@@ -349,32 +266,19 @@ export function CharacterCustomizationScreen({
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            {passwordError && (
-              <div className="text-red-400 text-xs font-mono text-center">{passwordError}</div>
-            )}
+            {passwordError && <div className="text-red-400 text-xs font-mono text-center">{passwordError}</div>}
             <div className="flex gap-2">
               <button
                 onClick={() => { setShowUnlockModal(false); setPasswordInput(''); setPasswordError(null); }}
-                className="flex-1 px-4 py-2.5 font-mono font-bold text-sm"
-                style={{
-                  background: 'rgba(15,23,42,0.8)',
-                  color: '#F1F5F9',
-                  border: '2px solid rgba(241,245,249,0.2)',
-                  borderRadius: '4px',
-                }}
+                className="flex-1 px-4 py-2.5 font-mono font-bold text-sm transition-all hover:brightness-125"
+                style={pixelSecondaryButton}
               >
                 Cancelar
               </button>
               <button
                 onClick={handleUnlockSubmit}
-                className="flex-1 px-4 py-2.5 font-mono font-bold text-sm"
-                style={{
-                  background: '#dc2626',
-                  color: '#FFFFFF',
-                  border: '2px solid #0F172A',
-                  borderRadius: '4px',
-                  boxShadow: '0 3px 0 #0F172A',
-                }}
+                className="flex-1 px-4 py-2.5 font-mono font-bold text-sm transition-all hover:brightness-110"
+                style={{ ...pixelPrimaryButton, background: 'linear-gradient(180deg, #ef4444 0%, #dc2626 45%, #991b1b 100%)' }}
               >
                 Desbloquear
               </button>
@@ -386,12 +290,7 @@ export function CharacterCustomizationScreen({
   );
 }
 
-function ColorPicker({
-  label,
-  colors,
-  selected,
-  onSelect,
-}: {
+function ColorPicker({ label, colors, selected, onSelect }: {
   label: string;
   colors: string[];
   selected: string;
@@ -410,11 +309,12 @@ function ColorPicker({
               width: '32px',
               height: '32px',
               background: c,
-              border: selected === c ? '3px solid #FFFFFF' : '2px solid rgba(241,245,249,0.2)',
-              borderRadius: '4px',
+              border: selected === c ? '3px solid #FFFFFF' : '2px solid #050a14',
+              borderRadius: '3px',
+              boxShadow: selected === c ? '0 3px 0 #050a14, 0 0 6px rgba(255,255,255,0.3)' : '0 2px 0 #050a14',
             }}
           >
-            {selected === c && <Check size={16} className="text-white drop-shadow-md" />}
+            {selected === c && <PixelCheck size={14} />}
           </button>
         ))}
       </div>
@@ -422,14 +322,7 @@ function ColorPicker({
   );
 }
 
-function OptionGrid({
-  options,
-  selected,
-  onSelect,
-  char,
-  previewType,
-  lockedItems = [],
-}: {
+function OptionGrid({ options, selected, onSelect, char, previewType, lockedItems = [] }: {
   options: { id: string; label: string; secret?: boolean }[];
   selected: string;
   onSelect: (id: string) => void;
@@ -461,21 +354,22 @@ function OptionGrid({
             <button
               key={opt.id}
               onClick={() => onSelect(opt.id)}
-              className="relative flex w-[104px] flex-none flex-col items-center gap-1 p-1.5 transition-all"
+              className="relative flex w-[104px] flex-none flex-col items-center gap-1 p-1.5 transition-all hover:brightness-125"
               style={{
-                background: selected === opt.id ? 'rgba(255,90,54,0.2)' : 'rgba(15,23,42,0.6)',
-                border: selected === opt.id ? '2px solid rgba(255,90,54,0.5)' : '2px solid rgba(241,245,249,0.1)',
+                background: selected === opt.id ? 'linear-gradient(180deg, rgba(255,90,54,0.2) 0%, rgba(255,90,54,0.08) 100%)' : 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)',
+                border: selected === opt.id ? '2px solid rgba(255,90,54,0.5)' : '2px solid #050a14',
                 borderRadius: '4px',
+                boxShadow: selected === opt.id ? '0 3px 0 #050a14, inset 0 2px 0 rgba(255,90,54,0.15)' : '0 3px 0 #050a14, inset 0 1px 0 rgba(148,163,184,0.06)',
               }}
             >
               {isLocked ? (
                 <div className="flex items-center justify-center" style={{ width: 44, height: 44 }}>
-                  <Lock size={20} color="#dc2626" />
+                  <PixelLock size={20} color="#dc2626" />
                 </div>
               ) : (
                 <CharacterAvatar customization={previewChar} size={44} />
               )}
-              <span className="text-[10px] font-mono" style={{ color: selected === opt.id ? '#FF5A36' : '#F1F5F9' }}>
+              <span className="text-[10px] font-mono" style={{ color: selected === opt.id ? '#FF5A36' : '#F1F5F9', textShadow: '1px 1px 0 #050a14' }}>
                 {opt.label}
               </span>
             </button>

@@ -1,9 +1,12 @@
 import { useState, useRef } from 'react';
-import { Play, Trophy, Volume2, VolumeX, LogOut, User, Palette } from 'lucide-react';
 import { soundManager } from '@/game/sound';
 import type { AuthUser } from '@/lib/supabase';
 import { CharacterAvatar } from '@/components/CharacterAvatar';
 import type { CharacterCustomization } from '@/game/characterTypes';
+import {
+  PixelPlay, PixelTrophy, PixelPalette, PixelLogout, PixelSpeaker, PixelArrowUp,
+  pixelPrimaryButton, pixelSecondaryButton, pixelPanelStyle,
+} from '@/components/pixelUI';
 
 interface MenuScreenProps {
   onStart: () => void;
@@ -23,12 +26,8 @@ export function MenuScreen({ onStart, onShowLeaderboard, onShowCustomization, hi
 
   const handleTitleClick = () => {
     titleTapCount.current += 1;
-
     if (titleTapTimer.current) clearTimeout(titleTapTimer.current);
-    titleTapTimer.current = setTimeout(() => {
-      titleTapCount.current = 0;
-    }, 600);
-
+    titleTapTimer.current = setTimeout(() => { titleTapCount.current = 0; }, 600);
     if (titleTapCount.current >= 3) {
       titleTapCount.current = 0;
       if (titleTapTimer.current) clearTimeout(titleTapTimer.current);
@@ -45,42 +44,44 @@ export function MenuScreen({ onStart, onShowLeaderboard, onShowCustomization, hi
         backgroundSize: '16px 16px',
       }} />
 
+      {/* Floating pixel stars */}
       <div className="absolute top-8 left-6 w-3 h-3 animate-[pulse-glow_3s_ease-in-out_infinite]" style={{ background: 'rgba(255,90,54,0.3)', imageRendering: 'pixelated' }} />
       <div className="absolute top-16 right-10 w-2 h-2 animate-[pulse-glow_4s_ease-in-out_infinite]" style={{ background: 'rgba(241,245,249,0.2)' }} />
       <div className="absolute bottom-20 left-12 w-4 h-4 animate-[pulse-glow_5s_ease-in-out_infinite]" style={{ background: 'rgba(255,90,54,0.2)' }} />
       <div className="absolute bottom-32 right-8 w-2 h-2 animate-[pulse-glow_4s_ease-in-out_infinite]" style={{ background: 'rgba(241,245,249,0.15)' }} />
 
+      {/* Top-right: user card + mute */}
       <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
         {user && (
-          <div className="flex items-center gap-2 px-3 py-1.5" style={{ background: 'rgba(15,23,42,0.8)', borderRadius: '4px', border: '2px solid rgba(255,90,54,0.3)' }}>
-            <div style={{ background: 'rgba(15,23,42,0.6)', borderRadius: '3px', border: '1px solid rgba(241,245,249,0.1)' }}>
-              <CharacterAvatar customization={customization} size={28} />
+          <div className="flex items-center gap-2 px-2.5 py-1.5" style={{
+            ...pixelPanelStyle,
+            boxShadow: '0 3px 0 #050a14, inset 0 2px 0 rgba(255,90,54,0.15), inset 0 -2px 0 rgba(0,0,0,0.3)',
+          }}>
+            <div style={{ background: 'rgba(15,23,42,0.6)', borderRadius: '2px', border: '1px solid rgba(241,245,249,0.08)' }}>
+              <CharacterAvatar customization={customization} size={26} />
             </div>
-            <span className="text-[#F1F5F9] font-mono text-sm font-bold">{user.username}</span>
+            <span className="text-[#F1F5F9] font-mono text-sm font-bold" style={{ textShadow: '1px 1px 0 #050a14' }}>{user.username}</span>
           </div>
         )}
         <button
-          onClick={() => {
-            const m = !muted;
-            setMuted(m);
-            soundManager.setMuted(m);
-          }}
-          className="w-10 h-10 flex items-center justify-center hover:border-[#FF5A36] transition-colors text-[#F1F5F9]"
-          style={{ background: 'rgba(15,23,42,0.8)', imageRendering: 'pixelated', borderRadius: '2px', border: '2px solid rgba(241,245,249,0.3)' }}
+          onClick={() => { const m = !muted; setMuted(m); soundManager.setMuted(m); }}
+          className="w-10 h-10 flex items-center justify-center transition-all hover:brightness-125"
+          style={{ ...pixelSecondaryButton, width: 40, height: 40 }}
         >
-          {muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+          <PixelSpeaker size={18} muted={muted} />
         </button>
       </div>
 
-      <div className="relative flex flex-col items-center gap-6 px-6 animate-[fadeIn_0.5s_ease-out] z-10">
+      <div className="relative flex flex-col items-center gap-5 px-6 animate-[fadeIn_0.5s_ease-out] z-10">
+        {/* Title */}
         <div className="text-center">
           <div className="relative" style={{ fontFamily: 'monospace', fontWeight: 900 }}>
             <h1
               onClick={handleTitleClick}
               className="text-5xl sm:text-6xl tracking-tight relative cursor-pointer select-none"
               style={{
-                  color: '#FF5A36',
-                textShadow: '4px 4px 0 #0F172A, 8px 8px 0 rgba(241,245,249,0.15)',
+                color: '#FF5A36',
+                textShadow: '4px 4px 0 #0F172A, 8px 8px 0 rgba(241,245,249,0.12)',
                 letterSpacing: '-0.02em',
                 imageRendering: 'pixelated',
               }}
@@ -93,80 +94,66 @@ export function MenuScreen({ onStart, onShowLeaderboard, onShowCustomization, hi
           </p>
         </div>
 
+        {/* High score plate */}
         {highScore > 0 && (
-          <div className="px-6 py-2" style={{ background: 'rgba(15,23,42,0.8)', borderRadius: '2px', border: '2px solid rgba(255,90,54,0.4)' }}>
-            <span className="text-[#F1F5F9]/80 text-sm font-mono">
+          <div className="flex items-center gap-2 px-4 py-2" style={{
+            ...pixelPanelStyle,
+            boxShadow: '0 4px 0 #050a14, inset 0 2px 0 rgba(255,90,54,0.12), inset 0 -2px 0 rgba(0,0,0,0.3)',
+          }}>
+            <PixelArrowUp size={12} color="#FF5A36" />
+            <span className="text-[#F1F5F9]/80 text-sm font-mono" style={{ textShadow: '1px 1px 0 #050a14' }}>
               Récord: <span className="text-[#FF5A36] font-bold">{highScore}m</span>
             </span>
           </div>
         )}
 
-        <div className="flex flex-col gap-3 w-52">
+        {/* Menu buttons */}
+        <div className="flex flex-col gap-2.5 w-56">
           <button
             onClick={onStart}
-            className="relative flex items-center justify-center gap-2 px-6 py-3 font-bold text-lg transition-transform hover:scale-105 active:scale-95"
-            style={{
-              background: '#FF5A36',
-              color: '#FFFFFF',
-              borderRadius: '4px',
-              border: '2px solid #0F172A',
-              boxShadow: '0 4px 0 #0F172A, 0 6px 8px rgba(0,0,0,0.3)',
-              fontFamily: 'monospace',
-              imageRendering: 'pixelated',
-            }}
+            className="relative flex items-center justify-center gap-2 px-6 py-3 font-bold text-lg transition-all hover:brightness-110 active:brightness-90"
+            style={pixelPrimaryButton}
           >
-            <Play size={22} fill="currentColor" />
+            <PixelPlay size={20} />
             JUGAR
           </button>
           {user && (
             <button
               onClick={onShowCustomization}
-              className="flex items-center justify-center gap-2 px-6 py-3 font-semibold transition-colors hover:border-[#FF5A36]/50"
-              style={{
-                background: 'rgba(15,23,42,0.8)',
-                color: '#F1F5F9',
-                border: '2px solid rgba(241,245,249,0.3)',
-                borderRadius: '4px',
-                fontFamily: 'monospace',
-              }}
+              className="flex items-center justify-center gap-2 px-6 py-2.5 font-semibold transition-all hover:brightness-125 active:brightness-90"
+              style={pixelSecondaryButton}
             >
-              <Palette size={20} />
+              <PixelPalette size={16} />
               Personalizar
             </button>
           )}
           <button
             onClick={onShowLeaderboard}
-            className="flex items-center justify-center gap-2 px-6 py-3 font-semibold transition-colors"
-            style={{
-              background: 'rgba(15,23,42,0.8)',
-              color: '#F1F5F9',
-              border: '2px solid rgba(241,245,249,0.3)',
-              borderRadius: '4px',
-              fontFamily: 'monospace',
-            }}
+            className="flex items-center justify-center gap-2 px-6 py-2.5 font-semibold transition-all hover:brightness-125 active:brightness-90"
+            style={pixelSecondaryButton}
           >
-            <Trophy size={20} />
+            <PixelTrophy size={16} />
             Ranking
           </button>
           {user && (
             <button
               onClick={onSignOut}
-              className="flex items-center justify-center gap-2 px-6 py-2 font-semibold transition-colors"
+              className="flex items-center justify-center gap-2 px-6 py-2 font-semibold transition-all hover:brightness-125 active:brightness-90"
               style={{
+                ...pixelSecondaryButton,
                 background: 'transparent',
-                color: 'rgba(241,245,249,0.5)',
-                border: '2px solid rgba(241,245,249,0.1)',
-                borderRadius: '4px',
-                fontFamily: 'monospace',
+                boxShadow: 'none',
+                border: '2px solid rgba(241,245,249,0.08)',
               }}
             >
-              <LogOut size={16} />
+              <PixelLogout size={14} />
               Cerrar sesión
             </button>
           )}
         </div>
 
-        <div className="mt-4 text-center max-w-xs">
+        {/* Controls hint */}
+        <div className="mt-2 text-center max-w-xs">
           <p className="text-[#F1F5F9]/40 text-xs font-mono leading-relaxed">
             PC: Flechas / A-D para moverse<br />
             Móvil: Botones en pantalla<br />
